@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout';
 import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
+import AdminPanel from './pages/AdminPanel';
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ function App() {
             <Route path="checkout" element={<Checkout />} />
             <Route path="profile" element={<Profile />} />
             <Route path="product/:id" element={<ProductDetail />} />
+            <Route path="admin" element={<AdminPanel />} />
           </Route>
         </Routes>
       </BrowserRouter>

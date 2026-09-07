@@ -2,9 +2,11 @@ import { useStore } from '../store/useStore';
 import { Settings, ShieldAlert, Package, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 const WebApp = (window as any).Telegram?.WebApp;
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user, isAdmin } = useStore();
 
   const { data: orders } = useQuery({
@@ -39,10 +41,14 @@ export default function Profile() {
 
         {/* Admin */}
         {isAdmin && (
-          <div className="bg-red-50 border border-red-200/50 rounded-2xl p-4 mb-6 flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/admin')}
+            className="w-full bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/50 rounded-2xl p-4 mb-6 flex items-center gap-3 active:scale-[0.98] transition-transform"
+          >
             <ShieldAlert size={20} className="text-red-500" />
-            <span className="text-sm font-semibold text-red-700">Admin panel</span>
-          </div>
+            <span className="text-sm font-bold text-red-700 flex-1 text-left">Admin Panel</span>
+            <ChevronRight size={16} className="text-red-400" />
+          </button>
         )}
 
         {/* Orders */}

@@ -1,0 +1,312 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '../lib/supabase';
+import { ArrowLeft, Plus, Trash2, Edit3, X, Save } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+interface ProductForm {
+  name: string;
+  description: string;
+  price: string;
+  image_url: string;
+  category_id: string;
+  is_featured: boolean;
+  is_available: boolean;
+}
+
+const emptyForm: ProductForm = {
+  name: '', description: '', price: '', image_url: '',
+  category_id: '', is_featured: false, is_available: true
+};
+
+export default function AdminPanel() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<ProductForm>(emptyForm);
+  const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
+  const [catForm, setCatForm] = useState({ name: '', image_url: '' });
+
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['admin-products'],
+    queryFn: async () => {
+      const { data } = await supabase.from('products').select('*, categories(name)').order('created_at', { ascending: false });
+      return data || [];
+    }
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data } = await supabase.from('categories').select('*').order('sort_order');
+      return data || [];
+    }
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (product: ProductForm) => {
+      const payload = {
+        name: product.name,
+        description: product.description,
+        price: parseFloat(product.price) || 0,
+        image_url: product.image_url,
+        category_id: product.category_id || null,
+        is_featured: product.is_featured,
+        is_available: product.is_available,
+      };
+      if (editingId) {
+        const { error } = await supabase.from('products').update(payload).eq('id', editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('products').insert(payload);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredProducts'] });
+      setShowForm(false);
+      setEditingId(null);
+      setForm(emptyForm);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    }
+  });
+
+  const saveCatMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('categories').insert({ name: catForm.name, image_url: catForm.image_url || null });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setCatForm({ name: '', image_url: '' });
+    }
+  });
+
+  const deleteCatMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('categories').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    }
+  });
+
+  const startEdit = (product: any) => {
+    setEditingId(product.id);
+    setForm({
+      name: product.name,
+      description: product.description || '',
+      price: String(product.price),
+      image_url: product.image_url || '',
+      category_id: product.category_id || '',
+      is_featured: product.is_featured || false,
+      is_available: product.is_available !== false,
+    });
+    setShowForm(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-background pb-24">
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3 bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)] flex items-center gap-3">
+        <button onClick={() => navigate('/profile')} className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <h1 className="text-xl font-bold">Admin Panel</h1>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 px-5 pt-4 pb-2">
+        <button 
+          onClick={() => setActiveTab('products')}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'products' ? 'bg-foreground text-white' : 'bg-muted text-muted-foreground'}`}
+        >
+          Mahsulotlar
+        </button>
+        <button 
+          onClick={() => setActiveTab('categories')}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'categories' ? 'bg-foreground text-white' : 'bg-muted text-muted-foreground'}`}
+        >
+          Kategoriyalar
+        </button>
+      </div>
+
+      <div className="px-5">
+        {activeTab === 'products' && (
+          <>
+            {/* Add button */}
+            <button
+              onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyForm); }}
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold flex items-center justify-center gap-2 mb-4 shadow-md active:scale-[0.98] transition-transform"
+            >
+              <Plus size={20} /> Yangi mahsulot
+            </button>
+
+            {/* Product Form Modal */}
+            {showForm && (
+              <div className="fixed inset-0 bg-black/50 z-[100] flex items-end">
+                <div className="bg-white w-full rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto animate-slide-up">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-bold">{editingId ? 'Tahrirlash' : 'Yangi mahsulot'}</h2>
+                    <button onClick={() => { setShowForm(false); setEditingId(null); }} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <input
+                      placeholder="Mahsulot nomi"
+                      value={form.name}
+                      onChange={e => setForm({...form, name: e.target.value})}
+                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                    />
+                    <textarea
+                      placeholder="Tavsif"
+                      value={form.description}
+                      onChange={e => setForm({...form, description: e.target.value})}
+                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500 min-h-[80px]"
+                    />
+                    <input
+                      placeholder="Narx (so'm)"
+                      type="number"
+                      value={form.price}
+                      onChange={e => setForm({...form, price: e.target.value})}
+                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                    />
+                    <input
+                      placeholder="Rasm URL (link)"
+                      value={form.image_url}
+                      onChange={e => setForm({...form, image_url: e.target.value})}
+                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                    />
+                    {form.image_url && (
+                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted">
+                        <img src={form.image_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <select
+                      value={form.category_id}
+                      onChange={e => setForm({...form, category_id: e.target.value})}
+                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                    >
+                      <option value="">Kategoriya tanlang</option>
+                      {categories?.map((cat: any) => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" checked={form.is_featured} onChange={e => setForm({...form, is_featured: e.target.checked})} className="accent-amber-500" />
+                        Mashhur
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" checked={form.is_available} onChange={e => setForm({...form, is_available: e.target.checked})} className="accent-amber-500" />
+                        Mavjud
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={() => saveMutation.mutate(form)}
+                      disabled={!form.name || !form.price || saveMutation.isPending}
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Save size={18} />
+                      {saveMutation.isPending ? 'Saqlanmoqda...' : 'Saqlash'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Products List */}
+            {isLoading ? (
+              <div className="flex justify-center py-10">
+                <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {products?.map((p: any) => (
+                  <div key={p.id} className="bg-card rounded-xl p-3 border border-border/50 shadow-sm flex gap-3">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
+                      {p.image_url ? <img src={p.image_url} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🎂</div>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-sm truncate">{p.name}</h3>
+                      <p className="text-xs text-muted-foreground">{p.categories?.name || 'Kategoriyasiz'}</p>
+                      <p className="text-sm font-bold text-amber-600 mt-0.5">{Number(p.price).toLocaleString()} so'm</p>
+                    </div>
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button onClick={() => startEdit(p)} className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                        <Edit3 size={14} />
+                      </button>
+                      <button onClick={() => { if(confirm('O\'chirish?')) deleteMutation.mutate(p.id); }} className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'categories' && (
+          <>
+            {/* Add Category */}
+            <div className="bg-card rounded-xl p-4 border border-border/50 mb-4 flex flex-col gap-3">
+              <input
+                placeholder="Kategoriya nomi"
+                value={catForm.name}
+                onChange={e => setCatForm({...catForm, name: e.target.value})}
+                className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+              />
+              <input
+                placeholder="Rasm URL (ixtiyoriy)"
+                value={catForm.image_url}
+                onChange={e => setCatForm({...catForm, image_url: e.target.value})}
+                className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+              />
+              <button
+                onClick={() => catForm.name && saveCatMutation.mutate()}
+                disabled={!catForm.name || saveCatMutation.isPending}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold disabled:opacity-50"
+              >
+                {saveCatMutation.isPending ? 'Saqlanmoqda...' : 'Kategoriya qo\'shish'}
+              </button>
+            </div>
+
+            {/* Categories List */}
+            <div className="flex flex-col gap-2">
+              {categories?.map((cat: any) => (
+                <div key={cat.id} className="bg-card rounded-xl p-3 border border-border/50 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted overflow-hidden shrink-0">
+                    {cat.image_url ? <img src={cat.image_url} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">📁</div>}
+                  </div>
+                  <span className="font-medium text-sm flex-1">{cat.name}</span>
+                  <button onClick={() => { if(confirm('O\'chirish?')) deleteCatMutation.mutate(cat.id); }} className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
