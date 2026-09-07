@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
 import ProductCard from '../components/ProductCard';
+import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';
 
@@ -179,6 +180,8 @@ export default function Home() {
             </div>
           )}
         </section>
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );
