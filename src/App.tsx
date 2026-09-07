@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 const WebApp = (window as any).Telegram.WebApp;
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -16,6 +16,19 @@ import AdminPanel from './pages/AdminPanel';
 
 const queryClient = new QueryClient();
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const setUser = useStore(state => state.setUser);
@@ -26,12 +39,9 @@ function App() {
     WebApp.expand();
     setTimeout(() => setShowSplash(false), 1500);
     
-    // WebApp.expand(); // optionally expand
-    // We enforce our premium light/gold theme, so we ignore Telegram's bg_color
     if (WebApp.initDataUnsafe?.user) {
       setUser(WebApp.initDataUnsafe.user as any);
       
-      // Hardcoded Admin ID since Vercel env vars are not loading properly
       const adminId = '1594150529';
       if (WebApp.initDataUnsafe.user.id.toString() === adminId) {
         setIsAdmin(true);
@@ -46,6 +56,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
