@@ -42,8 +42,13 @@ function App() {
     if (WebApp.initDataUnsafe?.user) {
       setUser(WebApp.initDataUnsafe.user as any);
       
-      const adminId = '1594150529';
-      if (WebApp.initDataUnsafe.user.id.toString() === adminId) {
+      const adminIds = ['1594150529'];
+      const adminUsernames = ['Rayyanas_bakeryy', 'AbdulazizbekITMentor'];
+      
+      const userId = WebApp.initDataUnsafe.user.id?.toString();
+      const username = WebApp.initDataUnsafe.user.username;
+      
+      if (adminIds.includes(userId) || (username && adminUsernames.includes(username))) {
         setIsAdmin(true);
       }
     }
