@@ -11,8 +11,8 @@ export default async function handler(req, res) {
   try {
     const { orderDetails, userDetails } = req.body;
     
-    const botToken = process.env.VITE_BOT_TOKEN; // Or just BOT_TOKEN in Vercel
-    const adminId = process.env.VITE_ADMIN_ID;   // Or just ADMIN_ID
+    const botToken = process.env.VITE_BOT_TOKEN || '8849500819:AAH74freLw2W5Nnpf9q9h1swajxncs5QZIs';
+    const adminId = process.env.VITE_ADMIN_ID || '1594150529';
     
     if (!botToken || !adminId) {
       return res.status(500).json({ error: 'Missing environment variables' });
@@ -24,6 +24,7 @@ export default async function handler(req, res) {
 👤 Mijoz: ${userDetails.firstName} ${userDetails.lastName || ''}
 📱 Telefon: ${orderDetails.phone}
 📍 Manzil: ${orderDetails.address}
+🛒 Mahsulotlar: ${orderDetails.items || '-'}
 💬 Izoh: ${orderDetails.comments || '-'}
 
 💰 Umumiy summa: <b>${orderDetails.total.toLocaleString('uz-UZ')} so'm</b>

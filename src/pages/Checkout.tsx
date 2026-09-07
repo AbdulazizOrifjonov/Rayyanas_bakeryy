@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
-  const { cart, clearCart, user } = useStore();
+  const { cart, clearCart, user, cartTotal } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -26,18 +27,83 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      // In a real app we'd upsert the user and get their UUID, then create the order.
-      // Let's assume our RLS allows order insertion.
+      // Check if user exists in our DB, if not create
+      const telegramId = user?.id?.toString() || 'anonymous';
       
-      // We will skip actual submission for this mock and just show success.
-      await new Promise(r => setTimeout(r, 1000));
+      let { data: dbUser } = await supabase.from('users').select('id').eq('telegram_id', telegramId).single();
       
-      WebApp.showAlert('Buyurtma qabul qilindi!');
+      if (!dbUser) {
+        const { data: newUser, error: userError } = await supabase.from('users').insert({
+          telegram_id: telegramId,
+          username: user?.username || '',
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone_number: formData.phone
+        }).select().single();
+        if (userError) throw userError;
+        dbUser = newUser;
+      }
+      
+      // Insert Order
+      const totalAmount = cartTotal();
+      const { data: order, error: orderError } = await supabase.from('orders').insert({
+        user_id: dbUser.id,
+        total_amount: totalAmount,
+        status: 'new',
+        delivery_address: formData.address,
+        phone_number: formData.phone
+      }).select().single();
+
+      if (orderError) throw orderError;
+
+      // Insert Order Items
+      const orderItems = cart.map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price_at_time: item.price
+      }));
+
+      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+      if (itemsError) throw itemsError;
+
+      try {
+        await fetch('/api/notify-admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderDetails: {
+              phone: formData.phone,
+              address: formData.address,
+              comments: formData.comments,
+              total: totalAmount,
+              items: cart.map(i => `${i.name} (${i.quantity} dona)`).join(', ')
+            },
+            userDetails: {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              username: user?.username
+            }
+          })
+        });
+      } catch (e) {
+        console.error('Notification failed', e);
+      }
+
+      if (WebApp?.showAlert) {
+        WebApp.showAlert('Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
+      } else {
+        alert('Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
+      }
       clearCart();
-      navigate('/orders');
+      navigate('/profile');
     } catch (error) {
       console.error(error);
-      WebApp.showAlert('Xatolik yuz berdi');
+      if (WebApp?.showAlert) {
+        WebApp.showAlert('Xatolik yuz berdi');
+      } else {
+        alert('Xatolik yuz berdi');
+      }
     } finally {
       setLoading(false);
     }
