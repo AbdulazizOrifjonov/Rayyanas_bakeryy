@@ -60,17 +60,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
           
           {quantity > 0 ? (
-            <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-between bg-amber-50 rounded-xl border border-amber-200/60 p-1">
+            <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-between bg-amber-50 rounded-xl border border-amber-200/60 p-1 h-[42px]">
               <button 
                 onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
-                className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-amber-600 active:bg-amber-100"
+                className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-amber-600 active:bg-amber-100 shrink-0"
               >
                 <Minus size={16} />
               </button>
               <span className="font-bold text-sm">{quantity}</span>
               <button 
                 onClick={() => updateQuantity(product.id, quantity + 1)}
-                className="w-8 h-8 rounded-lg bg-amber-500 text-white shadow-sm flex items-center justify-center active:bg-amber-600"
+                className="w-8 h-8 rounded-lg bg-amber-500 text-white shadow-sm flex items-center justify-center active:bg-amber-600 shrink-0"
               >
                 <Plus size={16} />
               </button>
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation();
                 addToCart(product);
               }}
-              className="w-full py-2.5 rounded-xl bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center gap-1.5 active:bg-amber-200 transition-colors"
+              className="w-full h-[42px] rounded-xl bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center gap-1.5 active:bg-amber-200 transition-colors"
             >
               <ShoppingCart size={14} />
               Savatga qo'shish
