@@ -1,5 +1,6 @@
 import { Plus, Check } from 'lucide-react';
-import { Product, useStore } from '../store/useStore';
+import type { Product } from '../store/useStore';
+import { useStore } from '../store/useStore';
 import { useState } from 'react';
 
 interface ProductCardProps {

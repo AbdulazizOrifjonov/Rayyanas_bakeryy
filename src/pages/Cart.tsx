@@ -1,13 +1,11 @@
 import { useStore } from '../store/useStore';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import WebApp from '@twa-dev/sdk';
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal } = useStore();
   const navigate = useNavigate();
-  const [isCheckout, setIsCheckout] = useState(false);
 
   const total = cartTotal();
 

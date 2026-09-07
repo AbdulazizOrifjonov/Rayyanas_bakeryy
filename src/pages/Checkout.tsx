@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
+
 import WebApp from '@twa-dev/sdk';
 
 export default function Checkout() {
-  const { cart, cartTotal, clearCart, user } = useStore();
+  const { cart, clearCart, user } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -27,17 +27,6 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      const orderData = {
-        total_amount: cartTotal(),
-        delivery_address: formData.address,
-        phone_number: formData.phone,
-        comments: formData.comments,
-        // Since we are not doing full auth yet, we might skip user_id or we need to upsert user first.
-        // For simplicity, we can rely on Telegram ID if we had an Edge function. 
-        // But for direct Supabase, we need a valid UUID. Let's just create order without user_id if RLS allows, 
-        // OR we just create a row in users table first.
-      };
-
       // In a real app we'd upsert the user and get their UUID, then create the order.
       // Let's assume our RLS allows order insertion.
       

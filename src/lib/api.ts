@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { Product } from '../store/useStore';
+import type { Product } from '../store/useStore';
 
 export interface Category {
   id: string;
