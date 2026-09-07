@@ -34,8 +34,11 @@ interface AppState {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  
   cartTotal: () => number;
+
+  favorites: Product[];
+  toggleFavorite: (product: Product) => void;
+  isFavorite: (productId: string) => boolean;
 }
 
 export const useStore = create<AppState>()(
@@ -85,11 +88,25 @@ export const useStore = create<AppState>()(
       
       cartTotal: () => {
         return get().cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-      }
+      },
+
+      favorites: [],
+      toggleFavorite: (product) => {
+        const favs = get().favorites;
+        const exists = favs.find(f => f.id === product.id);
+        if (exists) {
+          set({ favorites: favs.filter(f => f.id !== product.id) });
+        } else {
+          set({ favorites: [...favs, product] });
+        }
+      },
+      isFavorite: (productId) => {
+        return get().favorites.some(f => f.id === productId);
+      },
     }),
     {
       name: 'rayyanas-bakery-storage',
-      partialize: (state) => ({ cart: state.cart }), // Only persist cart
+      partialize: (state) => ({ cart: state.cart, favorites: state.favorites }),
     }
   )
 );

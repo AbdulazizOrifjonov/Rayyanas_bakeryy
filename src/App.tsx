@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
-import Orders from './pages/Orders';
+import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
 
@@ -48,9 +48,9 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="catalog" element={<Catalog />} />
+            <Route path="favorites" element={<Favorites />} />
             <Route path="cart" element={<Cart />} />
             <Route path="checkout" element={<Checkout />} />
-            <Route path="orders" element={<Orders />} />
             <Route path="profile" element={<Profile />} />
             <Route path="product/:id" element={<ProductDetail />} />
           </Route>

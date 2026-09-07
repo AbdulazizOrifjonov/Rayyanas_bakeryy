@@ -22,14 +22,14 @@ export default function Home() {
   return (
     <div className="pb-6">
       {/* Header */}
-      <header className="px-5 pt-6 pb-4 flex justify-between items-center bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)]">
+      <header className="px-5 pt-5 pb-3 flex items-center gap-3 bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)]">
+        <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-10 h-10 rounded-full object-cover shadow-md border-2 border-amber-400/30" />
         <div>
-          <h1 className="text-[28px] font-extrabold text-foreground tracking-tight leading-none mb-1">
-            Rayyanas <span className="text-primary">Bakery</span>
+          <h1 className="text-xl font-extrabold text-foreground tracking-tight leading-none" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Rayyanas <span className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 bg-clip-text text-transparent">Bakery</span>
           </h1>
-          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">By Rayyulova Nigora</p>
+          <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">By Rasulova Nigora</p>
         </div>
-        <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-amber-500/30" />
       </header>
 
       <div className="px-5">

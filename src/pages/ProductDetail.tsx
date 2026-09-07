@@ -2,13 +2,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useStore } from '../store/useStore';
-import { ArrowLeft, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, ShoppingCart, Heart } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { cart, addToCart, updateQuantity, removeFromCart } = useStore();
+  const { cart, addToCart, updateQuantity, removeFromCart, toggleFavorite, isFavorite } = useStore();
   const [imgLoaded, setImgLoaded] = useState(false);
 
   const { data: product, isLoading } = useQuery({
@@ -22,7 +22,7 @@ export default function ProductDetail() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -37,11 +37,12 @@ export default function ProductDetail() {
 
   const cartItem = cart.find(item => item.id === product.id);
   const quantity = cartItem?.quantity || 0;
+  const loved = isFavorite(product.id);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       {/* Hero Image */}
-      <div className="relative w-full aspect-square bg-muted overflow-hidden">
+      <div className="relative w-full aspect-[4/3] bg-muted overflow-hidden">
         {product.image_url && (
           <img 
             src={product.image_url} 
@@ -54,7 +55,7 @@ export default function ProductDetail() {
           <div className="w-full h-full flex items-center justify-center text-6xl text-muted-foreground/20">🎂</div>
         )}
         
-        {/* Back button */}
+        {/* Top buttons */}
         <button 
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
@@ -62,8 +63,15 @@ export default function ProductDetail() {
           <ArrowLeft size={20} className="text-foreground" />
         </button>
 
+        <button 
+          onClick={() => toggleFavorite(product)}
+          className="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+        >
+          <Heart size={20} className={loved ? 'fill-red-500 text-red-500' : 'text-gray-500'} />
+        </button>
+
         {product.is_featured && (
-          <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-yellow-400 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+          <div className="absolute bottom-4 left-4 bg-gradient-to-r from-amber-600 to-yellow-400 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
             ⭐ TOP
           </div>
         )}
@@ -79,7 +87,7 @@ export default function ProductDetail() {
           </p>
 
           {/* Price */}
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-8">
             <span className="text-3xl font-extrabold bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
               {product.price.toLocaleString()}
             </span>
@@ -88,19 +96,19 @@ export default function ProductDetail() {
 
           {/* Quantity Controls */}
           {quantity > 0 ? (
-            <div className="flex items-center justify-between bg-muted/50 rounded-2xl p-2">
+            <div className="flex items-center justify-between bg-amber-50/80 rounded-2xl p-3 border border-amber-200/50">
               <button 
                 onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
-                className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center active:scale-95 transition-transform"
+                className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center active:scale-95 transition-transform border border-border/50"
               >
                 <Minus size={20} className="text-foreground" />
               </button>
-              <span className="text-xl font-bold text-foreground">{quantity}</span>
+              <span className="text-2xl font-bold text-foreground">{quantity}</span>
               <button 
                 onClick={() => updateQuantity(product.id, quantity + 1)}
-                className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center active:scale-95 transition-transform"
+                className="w-12 h-12 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 shadow-sm flex items-center justify-center active:scale-95 transition-transform text-white"
               >
-                <Plus size={20} className="text-foreground" />
+                <Plus size={20} />
               </button>
             </div>
           ) : (
