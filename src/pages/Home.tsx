@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useStore } from '../store/useStore';
+
 import { api } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
