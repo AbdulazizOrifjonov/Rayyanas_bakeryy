@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';
-import Marquee from 'react-fast-marquee';
+
 import { t, translateDynamic } from '../lib/i18n';
 import { useStore } from '../store/useStore';
 
@@ -109,26 +109,48 @@ export default function Home() {
             ) : categories?.length === 0 ? (
               <p className="text-muted-foreground text-sm py-4 px-5">Kategoriyalar mavjud emas</p>
             ) : (
-              <Marquee pauseOnHover={true} pauseOnClick={true} speed={30} gradient={true} gradientColor="white" gradientWidth={30}>
-                {categories?.map(cat => (
-                  <div 
-                    key={cat.id} 
-                    onClick={() => navigate(`/catalog?category=${cat.id}`)}
-                    className="w-[100px] shrink-0 flex flex-col items-center gap-2 cursor-pointer group mx-1.5 pb-2"
-                  >
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted border-2 border-transparent active:border-amber-400 transition-colors shadow-sm">
-                      {cat.image_url ? (
-                        <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover pointer-events-none" />
-                      ) : (
-                        <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full p-4 pointer-events-none" />
-                      )}
+              <div className="overflow-hidden relative w-full -mx-5 px-5 py-1">
+                <div className="flex gap-3 animate-scroll">
+                  {/* First Set */}
+                  {categories?.map(cat => (
+                    <div 
+                      key={cat.id + '-1'} 
+                      onClick={() => navigate(`/catalog?category=${cat.id}`)}
+                      className="w-[100px] shrink-0 flex flex-col items-center gap-2 cursor-pointer group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted border-2 border-transparent active:border-amber-400 transition-colors shadow-sm">
+                        {cat.image_url ? (
+                          <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover pointer-events-none" />
+                        ) : (
+                          <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full p-4 pointer-events-none" />
+                        )}
+                      </div>
+                      <span className="text-xs font-semibold text-center text-foreground line-clamp-2 leading-tight">
+                        {cat.name}
+                      </span>
                     </div>
-                    <span className="text-xs font-semibold text-center text-foreground line-clamp-2 leading-tight">
-                      {cat.name}
-                    </span>
-                  </div>
-                ))}
-              </Marquee>
+                  ))}
+                  {/* Duplicate Set for Infinite Scroll */}
+                  {categories?.map(cat => (
+                    <div 
+                      key={cat.id + '-2'} 
+                      onClick={() => navigate(`/catalog?category=${cat.id}`)}
+                      className="w-[100px] shrink-0 flex flex-col items-center gap-2 cursor-pointer group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted border-2 border-transparent active:border-amber-400 transition-colors shadow-sm">
+                        {cat.image_url ? (
+                          <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover pointer-events-none" />
+                        ) : (
+                          <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full p-4 pointer-events-none" />
+                        )}
+                      </div>
+                      <span className="text-xs font-semibold text-center text-foreground line-clamp-2 leading-tight">
+                        {cat.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </section>
