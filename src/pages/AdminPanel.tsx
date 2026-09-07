@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Plus, Trash2, Edit3, X, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit3, X, Save, Image } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface ProductForm {
@@ -17,6 +17,41 @@ interface ProductForm {
 const emptyForm: ProductForm = {
   name: '', description: '', price: '', image_url: '',
   category_id: '', is_featured: false, is_available: true
+};
+
+const resizeImage = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+    };
+  });
 };
 
 export default function AdminPanel() {
@@ -211,12 +246,29 @@ export default function AdminPanel() {
                       onChange={e => setForm({...form, price: e.target.value})}
                       className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
                     />
-                    <input
-                      placeholder="Rasm URL (link)"
-                      value={form.image_url}
-                      onChange={e => setForm({...form, image_url: e.target.value})}
-                      className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        placeholder="Rasm URL yozing yoki fayl tanlang"
+                        value={form.image_url}
+                        onChange={e => setForm({...form, image_url: e.target.value})}
+                        className="flex-1 bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                      />
+                      <label className="w-12 h-[46px] rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 cursor-pointer shrink-0 border border-amber-200">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const base64 = await resizeImage(file);
+                              setForm({...form, image_url: base64});
+                            }
+                          }} 
+                        />
+                        <Image size={20} />
+                      </label>
+                    </div>
                     {form.image_url && (
                       <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted">
                         <img src={form.image_url} alt="" className="w-full h-full object-cover" />
@@ -299,12 +351,29 @@ export default function AdminPanel() {
                 onChange={e => setCatForm({...catForm, name: e.target.value})}
                 className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
               />
-              <input
-                placeholder="Rasm URL (ixtiyoriy)"
-                value={catForm.image_url}
-                onChange={e => setCatForm({...catForm, image_url: e.target.value})}
-                className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
-              />
+              <div className="flex gap-2">
+                <input
+                  placeholder="Rasm URL (ixtiyoriy) yoki fayl tanlang"
+                  value={catForm.image_url}
+                  onChange={e => setCatForm({...catForm, image_url: e.target.value})}
+                  className="flex-1 bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
+                />
+                <label className="w-12 h-[46px] rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 cursor-pointer shrink-0 border border-amber-200">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const base64 = await resizeImage(file);
+                        setCatForm({...catForm, image_url: base64});
+                      }
+                    }} 
+                  />
+                  <Image size={20} />
+                </label>
+              </div>
               <button
                 onClick={() => catForm.name && saveCatMutation.mutate()}
                 disabled={!catForm.name || saveCatMutation.isPending}

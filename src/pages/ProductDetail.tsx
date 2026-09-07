@@ -40,7 +40,7 @@ export default function ProductDetail() {
   const loved = isFavorite(product.id);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24">
+    <div className="min-h-screen bg-[#F8F9FA] pb-6">
       {/* Header inside image */}
       <div className="relative w-full aspect-[4/5] bg-white overflow-hidden rounded-b-[40px] shadow-sm">
         {product.image_url ? (
@@ -92,11 +92,42 @@ export default function ProductDetail() {
           {product.name}
         </h1>
         
-        <div className="flex items-end gap-2 mb-8">
-          <span className="text-4xl font-black text-amber-600">
-            {product.price.toLocaleString()}
-          </span>
-          <span className="text-gray-500 font-semibold mb-1">so'm</span>
+        {/* Price and Cart Action */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-3xl font-black text-amber-600 tracking-tight">
+              {product.price.toLocaleString()}
+            </span>
+            <span className="text-gray-500 font-semibold text-sm">so'm</span>
+          </div>
+
+          <div className="min-w-[140px]">
+            {quantity > 0 ? (
+              <div className="flex items-center justify-between bg-amber-50 rounded-xl p-1.5 border border-amber-200">
+                <button 
+                  onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
+                  className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center active:scale-95 transition-transform"
+                >
+                  <Minus size={20} className="text-amber-700" />
+                </button>
+                <span className="text-lg font-bold text-amber-900 px-3">{quantity}</span>
+                <button 
+                  onClick={() => updateQuantity(product.id, quantity + 1)}
+                  className="w-10 h-10 rounded-lg bg-amber-500 shadow-sm flex items-center justify-center active:scale-95 transition-transform text-white"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => addToCart(product)}
+                className="w-full h-[52px] rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md active:scale-95 transition-transform"
+              >
+                <ShoppingCart size={18} />
+                Savatga
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Info Alert */}
@@ -116,36 +147,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Fixed Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-5 pb-safe z-50">
-        <div className="max-w-md mx-auto">
-          {quantity > 0 ? (
-            <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-2 border border-gray-100">
-              <button 
-                onClick={() => quantity === 1 ? removeFromCart(product.id) : updateQuantity(product.id, quantity - 1)}
-                className="w-14 h-14 rounded-xl bg-white shadow-sm flex items-center justify-center active:scale-95 transition-transform"
-              >
-                <Minus size={24} className="text-gray-700" />
-              </button>
-              <span className="text-3xl font-black text-gray-900">{quantity}</span>
-              <button 
-                onClick={() => updateQuantity(product.id, quantity + 1)}
-                className="w-14 h-14 rounded-xl bg-amber-500 shadow-sm shadow-amber-500/30 flex items-center justify-center active:scale-95 transition-transform text-white"
-              >
-                <Plus size={24} />
-              </button>
-            </div>
-          ) : (
-            <button 
-              onClick={() => addToCart(product)}
-              className="w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 bg-amber-500 text-white shadow-lg shadow-amber-500/30 active:scale-[0.98] transition-transform"
-            >
-              <ShoppingCart size={22} />
-              Savatga qo'shish
-            </button>
-          )}
-        </div>
-      </div>
+
     </div>
   );
 }
