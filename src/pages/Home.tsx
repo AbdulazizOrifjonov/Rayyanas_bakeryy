@@ -34,13 +34,13 @@ export default function Home() {
 
       <div className="px-5">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/80 border border-amber-200/50 rounded-[24px] p-6 mb-8 relative overflow-hidden">
-          <div className="absolute -top-2 -right-2">
-            <img src="/logo.jpg" alt="" className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-amber-300/40" />
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/80 border border-amber-200/50 rounded-[24px] p-6 mb-8 relative mt-4 shadow-sm">
+          <div className="absolute -top-4 -right-1 z-0">
+            <img src="/logo.jpg" alt="" className="w-24 h-24 rounded-full object-cover shadow-md border-[3px] border-amber-300/60" />
           </div>
           <div className="relative z-10">
             <h2 className="text-2xl font-bold mb-1 text-foreground">
-              Xush kelibsiz{user ? `, ${user.first_name}` : ''}!
+              Xush kelibsiz!
             </h2>
             <p className="text-sm text-muted-foreground mb-4 max-w-[80%]">
               Premium tortlar, shirinliklar va pishiriqlar olami.
