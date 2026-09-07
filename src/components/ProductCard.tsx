@@ -2,6 +2,7 @@ import { Plus, Minus, Heart, ShoppingCart } from 'lucide-react';
 import type { Product } from '../store/useStore';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
+import { t } from '../lib/i18n';
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +15,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const removeFromCart = useStore(state => state.removeFromCart);
   const toggleFavorite = useStore(state => state.toggleFavorite);
   const isFavorite = useStore(state => state.isFavorite);
+  const lang = useStore(state => state.lang);
   const navigate = useNavigate();
   
   const cartItem = cart.find(item => item.id === product.id);
@@ -56,7 +58,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         
         <div className="mt-auto flex flex-col gap-3">
           <p className="font-extrabold text-amber-600">
-            {product.price.toLocaleString()} <span className="text-[10px] font-semibold">so'm</span>
+            {product.price.toLocaleString()} <span className="text-[10px] font-semibold">{t('currency', lang)}</span>
           </p>
           
           {quantity > 0 ? (
@@ -84,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               className="w-full h-[42px] rounded-xl bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center gap-1.5 active:bg-amber-200 transition-colors"
             >
               <ShoppingCart size={14} />
-              Savatga qo'shish
+              {t('add_to_cart', lang)}
             </button>
           )}
         </div>

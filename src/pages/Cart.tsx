@@ -1,10 +1,11 @@
 import { useStore } from '../store/useStore';
 import { Minus, Plus, Trash2, ShoppingBag, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { t } from '../lib/i18n';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, cartTotal, toggleFavorite, isFavorite } = useStore();
+  const { cart, removeFromCart, updateQuantity, cartTotal, toggleFavorite, isFavorite, lang } = useStore();
   const navigate = useNavigate();
 
   const total = cartTotal();
@@ -15,15 +16,15 @@ export default function Cart() {
         <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mb-6">
           <ShoppingBag size={48} className="text-muted-foreground/50" />
         </div>
-        <h2 className="text-xl font-bold mb-2">Savatingiz bo'sh</h2>
+        <h2 className="text-xl font-bold mb-2">{t('cart_empty', lang)}</h2>
         <p className="text-muted-foreground mb-8 text-sm">
-          Menyudan mazali shirinliklarni tanlab, savatga qo'shishingiz mumkin.
+          {t('cart_empty_desc', lang)}
         </p>
         <button
           onClick={() => navigate('/catalog')}
           className="bg-primary text-primary-foreground font-bold py-3 px-8 rounded-full active:scale-95 transition-transform"
         >
-          Menyuga o'tish
+          {t('go_to_menu', lang)}
         </button>
       </div>
     );
@@ -32,7 +33,7 @@ export default function Cart() {
   return (
     <div className="pb-32 relative min-h-screen">
       <header className="px-5 pt-6 pb-4 bg-background sticky top-0 z-10 border-b border-border/50">
-        <h1 className="text-2xl font-bold text-foreground">Savat</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('cart', lang)}</h1>
       </header>
 
       <div className="px-5 py-4 flex flex-col gap-4">
@@ -51,7 +52,7 @@ export default function Cart() {
             <div className="flex-1 min-w-0 flex justify-between">
               <div className="flex-1">
                 <h3 className="font-bold text-sm truncate mb-1 pr-2">{item.name}</h3>
-                <p className="text-amber-600 font-bold text-sm mb-2">{item.price.toLocaleString('uz-UZ')} so'm</p>
+                <p className="text-amber-600 font-bold text-sm mb-2">{item.price.toLocaleString('uz-UZ')} {t('currency', lang)}</p>
                 <div className="flex items-center justify-between bg-amber-50 rounded-xl border border-amber-200/60 p-1 w-fit">
                   <button 
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -90,8 +91,8 @@ export default function Cart() {
       <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-border z-20">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-4">
-            <span className="font-semibold text-muted-foreground">Jami:</span>
-            <span className="font-extrabold text-xl">{total.toLocaleString('uz-UZ')} so'm</span>
+            <span className="font-semibold text-muted-foreground">{t('total', lang)}:</span>
+            <span className="font-extrabold text-xl">{total.toLocaleString('uz-UZ')} {t('currency', lang)}</span>
           </div>
           <button 
             onClick={() => {
@@ -102,7 +103,7 @@ export default function Cart() {
             }}
             className="w-full bg-foreground text-background py-4 rounded-full font-bold text-lg active:scale-95 transition-transform shadow-lg shadow-foreground/20"
           >
-            Buyurtma berish
+            {t('checkout', lang)}
           </button>
         </div>
       </div>

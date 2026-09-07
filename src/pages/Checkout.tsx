@@ -1,47 +1,19 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { YMaps, Map as YMap, Placemark } from '@pbe/react-yandex-maps';
 import { LocateFixed } from 'lucide-react';
 const WebApp = (window as any).Telegram.WebApp;
 
-// Fix Leaflet default icon
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
-
-// Location Marker Component
-function LocationMarker({ coords, setCoords, setHasMoved }: any) {
-  const map = useMapEvents({
-    click(e) {
-      setCoords([e.latlng.lat, e.latlng.lng]);
-      setHasMoved(true);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
-
-  // We expose a global function to let the parent trigger flyTo when GPS button is clicked
-  (window as any).flyToLocation = (lat: number, lng: number) => {
-    map.flyTo([lat, lng], 16);
-  };
-
-  return coords === null ? null : (
-    <Marker position={coords}></Marker>
-  );
-}
-
 export default function Checkout() {
-  const { cart, clearCart, user, cartTotal } = useStore();
+  const { cart, clearCart, user, cartTotal, lang } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
+  const [mapInst, setMapInst] = useState<any>(null);
 
   const handleLocateMe = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -50,7 +22,7 @@ export default function Checkout() {
         const newCoords: [number, number] = [position.coords.latitude, position.coords.longitude];
         setCoords(newCoords);
         setHasMoved(true);
-        if ((window as any).flyToLocation) (window as any).flyToLocation(newCoords[0], newCoords[1]);
+        if (mapInst) mapInst.setCenter(newCoords, 16);
       }, () => {
         if ((window as any).Telegram?.WebApp?.showAlert) {
           (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
@@ -143,18 +115,18 @@ export default function Checkout() {
       }
 
       if (WebApp?.showAlert) {
-        WebApp.showAlert('Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
+        WebApp.showAlert(t('order_success', lang) || 'Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
       } else {
-        alert('Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
+        alert(t('order_success', lang) || 'Buyurtmangiz qabul qilindi! Adminlar tez orada siz bilan bog\'lanishadi.');
       }
       clearCart();
       navigate('/profile');
     } catch (error) {
       console.error(error);
       if (WebApp?.showAlert) {
-        WebApp.showAlert('Xatolik yuz berdi');
+        WebApp.showAlert(t('error_occurred', lang) || 'Xatolik yuz berdi');
       } else {
-        alert('Xatolik yuz berdi');
+        alert(t('error_occurred', lang) || 'Xatolik yuz berdi');
       }
     } finally {
       setLoading(false);
@@ -164,22 +136,22 @@ export default function Checkout() {
   return (
     <div className="p-5 pb-24">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">Rasmiylashtirish</h1>
+        <h1 className="text-2xl font-bold">{t('checkout_title', lang)}</h1>
       </header>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Ism</label>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('name', lang)}</label>
           <input required name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary" placeholder="Ismingiz" />
         </div>
         
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Telefon raqam</label>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('phone', lang)}</label>
           <input required name="phone" type="tel" value={formData.phone} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary" placeholder="+998 90 123 45 67" />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili</label>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('address_label', lang)}</label>
           <textarea 
             required 
             name="address" 
@@ -192,7 +164,7 @@ export default function Checkout() {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Izoh (ixtiyoriy)</label>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('comments', lang)}</label>
           <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
         </div>
 
@@ -201,22 +173,29 @@ export default function Checkout() {
           type="submit" 
           className="w-full bg-primary text-primary-foreground py-4 rounded-full font-bold text-lg mt-2 disabled:opacity-70 shadow-md"
         >
-          {loading ? 'Yuborilmoqda...' : 'Tasdiqlash'}
+          {loading ? t('submitting', lang) : t('submit', lang)}
         </button>
 
         {/* MAP SECTION AT THE VERY BOTTOM */}
         <div className="mt-4 border-t border-border/50 pt-4">
           <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
-            <span>Xarita orqali belgilang</span>
+            <span>{t('map_label', lang)}</span>
           </label>
           <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-            <MapContainer center={coords} zoom={13} style={{ height: '100%', width: '100%', zIndex: 0 }}>
-              <TileLayer
-                attribution='&copy; OpenStreetMap'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <LocationMarker coords={coords} setCoords={setCoords} setHasMoved={setHasMoved} />
-            </MapContainer>
+            <YMaps query={{ lang: 'ru_RU' }}>
+              <YMap 
+                instanceRef={(ref) => setMapInst(ref)}
+                defaultState={{ center: [41.2995, 69.2401], zoom: 12 }} 
+                width="100%" 
+                height="100%"
+                onClick={(e: any) => {
+                  setCoords(e.get('coords'));
+                  setHasMoved(true);
+                }}
+              >
+                {hasMoved && <Placemark geometry={coords} />}
+              </YMap>
+            </YMaps>
             
             {/* Locate Me Button */}
             <button
@@ -227,7 +206,7 @@ export default function Checkout() {
               <LocateFixed size={24} />
             </button>
           </div>
-          <p className="text-xs font-medium text-amber-600 text-center">Xaritani bosib manzilni belgilang yoki lokatsiya tugmasini bosing</p>
+          <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
         </div>
       </form>
     </div>

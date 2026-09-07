@@ -1,33 +1,68 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { supabase } from '../lib/supabase';
 import { api } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';
+import { t, translateDynamic } from '../lib/i18n';
+import { useStore } from '../store/useStore';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { lang, setLang } = useStore();
 
   const { data: categories, isLoading: catsLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: api.getCategories
+    queryKey: ['categories', lang],
+    queryFn: async () => {
+      const { data } = await supabase.from('categories').select('*').order('created_at');
+      if (!data) return [];
+      if (lang === 'uz') return data;
+      const names = data.map(c => c.name);
+      const translatedNames = await translateDynamic(names, lang);
+      return data.map((c, i) => ({ ...c, name: translatedNames[i] }));
+    }
   });
 
   const { data: featuredProducts, isLoading: prodsLoading } = useQuery({
-    queryKey: ['featuredProducts'],
-    queryFn: api.getFeaturedProducts
+    queryKey: ['products', lang],
+    queryFn: async () => {
+      const { data } = await supabase.from('products').select('*').order('created_at');
+      if (!data) return [];
+      if (lang === 'uz') return data;
+      const names = data.map(p => p.name);
+      const translatedNames = await translateDynamic(names, lang);
+      return data.map((p, i) => ({ ...p, name: translatedNames[i] }));
+    }
   });
 
   return (
     <div className="pb-6">
       {/* Header */}
-      <header className="px-5 pt-5 pb-3 flex items-center gap-3 bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)]">
-        <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-10 h-10 rounded-full object-cover shadow-md border-2 border-amber-400/30" />
-        <div>
-          <h1 className="text-xl font-extrabold text-foreground tracking-tight leading-none" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            Rayyanas <span className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 bg-clip-text text-transparent">Bakery</span>
-          </h1>
-          <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">By Rasulova Nigora</p>
+      <header className="px-5 pt-6 pb-4 bg-background sticky top-0 z-50 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shadow-sm">
+            <CakeSlice className="text-amber-600" size={20} />
+          </div>
+          <div>
+            <h1 className="text-xl font-extrabold text-foreground tracking-tight flex items-center gap-1">
+              Rayyanas <span className="text-amber-500">Bakery</span>
+            </h1>
+            <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">By Rasulova Nigora</p>
+          </div>
+        </div>
+        
+        {/* Language Switcher */}
+        <div className="flex bg-muted/50 rounded-lg p-1 border border-border/50">
+          {(['uz', 'ru', 'en'] as const).map(l => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase transition-colors ${lang === l ? 'bg-white shadow-sm text-amber-600' : 'text-muted-foreground'}`}
+            >
+              {l}
+            </button>
+          ))}
         </div>
       </header>
 
@@ -39,16 +74,16 @@ export default function Home() {
           </div>
           <div className="relative z-10">
             <h2 className="text-2xl font-bold mb-1 text-foreground">
-              Xush kelibsiz!
+              {t('welcome', lang)}
             </h2>
             <p className="text-sm text-muted-foreground mb-4 max-w-[80%]">
-              Premium tortlar, shirinliklar va pishiriqlar olami.
+              {t('subtitle', lang)}
             </p>
             <button 
               onClick={() => navigate('/catalog')}
               className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 px-5 py-2.5 rounded-full text-sm font-semibold active:scale-95 transition-transform"
             >
-              Menyuni ko'rish
+              {t('view_menu', lang)}
             </button>
           </div>
         </div>
@@ -56,9 +91,9 @@ export default function Home() {
         {/* Categories */}
         <section className="mb-8">
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-xl font-bold text-foreground">Kategoriyalar</h2>
+            <h2 className="text-xl font-bold text-foreground">{t('categories', lang)}</h2>
             <button onClick={() => navigate('/catalog')} className="text-amber-600 font-bold text-sm flex items-center">
-              Barchasi <ChevronRight size={16} />
+              {t('all', lang)} <ChevronRight size={16} />
             </button>
           </div>
           
@@ -94,7 +129,7 @@ export default function Home() {
         {/* Featured Products */}
         <section>
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-xl font-bold text-foreground">Mashhur mahsulotlar</h2>
+            <h2 className="text-xl font-bold text-foreground">{t('popular', lang)}</h2>
           </div>
           
           {prodsLoading ? (

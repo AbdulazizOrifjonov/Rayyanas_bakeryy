@@ -1,26 +1,47 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { api } from '../lib/api';
 import ProductCard from '../components/ProductCard';
+import { t, translateDynamic } from '../lib/i18n';
+import { useStore } from '../store/useStore';
+import { supabase } from '../lib/supabase';
 
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get('category') || '';
+  const lang = useStore(state => state.lang);
 
   const { data: categories, isLoading: catsLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: api.getCategories
+    queryKey: ['categories', lang],
+    queryFn: async () => {
+      const { data } = await supabase.from('categories').select('*').order('created_at');
+      if (!data) return [];
+      if (lang === 'uz') return data;
+      const names = data.map(c => c.name);
+      const translated = await translateDynamic(names, lang);
+      return data.map((c, i) => ({ ...c, name: translated[i] }));
+    }
   });
 
   const { data: products, isLoading: prodsLoading } = useQuery({
-    queryKey: ['products', selectedCategory],
-    queryFn: () => api.getProducts(selectedCategory || undefined)
+    queryKey: ['products', lang],
+    queryFn: async () => {
+      let query = supabase.from('products').select('*').order('created_at');
+      if (selectedCategory) {
+        query = query.eq('category_id', selectedCategory);
+      }
+      const { data } = await query;
+      if (!data) return [];
+      if (lang === 'uz') return data;
+      const names = data.map(p => p.name);
+      const translated = await translateDynamic(names, lang);
+      return data.map((p, i) => ({ ...p, name: translated[i] }));
+    }
   });
 
   return (
     <div className="pb-6">
       <header className="px-5 pt-6 pb-4 bg-background sticky top-0 z-10">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Katalog</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-4">{t('catalog', lang)}</h1>
         
         {/* Category Pills */}
         <div className="flex overflow-x-auto gap-2 pb-2 -mx-5 px-5 hide-scrollbar">
@@ -32,7 +53,7 @@ export default function Catalog() {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Barchasi
+            {t('all', lang)}
           </button>
           
           {catsLoading ? (

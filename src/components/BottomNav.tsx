@@ -1,18 +1,20 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Search, ShoppingCart, Heart, User } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { t } from '../lib/i18n';
 
 export default function BottomNav() {
   const cart = useStore(state => state.cart);
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const favCount = useStore(state => state.favorites.length);
+  const lang = useStore(state => state.lang);
 
   const navItems = [
-    { to: '/', icon: Home, label: 'Asosiy' },
-    { to: '/catalog', icon: Search, label: 'Katalog' },
-    { to: '/favorites', icon: Heart, label: 'Sevimlilar', badge: favCount },
-    { to: '/cart', icon: ShoppingCart, label: 'Savat', badge: cartItemCount },
-    { to: '/profile', icon: User, label: 'Profil' },
+    { to: '/', icon: Home, label: t('home', lang) },
+    { to: '/catalog', icon: Search, label: t('catalog', lang) },
+    { to: '/favorites', icon: Heart, label: t('favorites', lang), badge: favCount },
+    { to: '/cart', icon: ShoppingCart, label: t('cart', lang), badge: cartItemCount },
+    { to: '/profile', icon: User, label: t('profile', lang) },
   ];
 
   return (

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { Language } from '../lib/i18n';
 
 export interface Product {
   id: string;
@@ -24,6 +25,8 @@ interface TelegramUser {
 }
 
 interface AppState {
+  lang: Language;
+  setLang: (l: Language) => void;
   user: TelegramUser | null;
   isAdmin: boolean;
   setUser: (user: TelegramUser | null) => void;
@@ -44,6 +47,8 @@ interface AppState {
 export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
+      lang: 'uz',
+      setLang: (lang) => set({ lang }),
       user: null,
       isAdmin: false,
       setUser: (user) => set({ user }),
