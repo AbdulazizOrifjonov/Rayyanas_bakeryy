@@ -162,10 +162,27 @@ export default function Checkout() {
             placeholder="Shahar, tuman, ko'cha, uy..." 
           />
 
-          <label className="text-sm font-semibold text-muted-foreground mb-1 flex items-center justify-between">
-            <span>Xaritadan belgilang (ixtiyoriy)</span>
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Izoh (ixtiyoriy)</label>
+          <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
+        </div>
+
+        <button 
+          disabled={loading}
+          type="submit" 
+          className="w-full bg-primary text-primary-foreground py-4 rounded-full font-bold text-lg mt-2 disabled:opacity-70 shadow-md"
+        >
+          {loading ? 'Yuborilmoqda...' : 'Tasdiqlash'}
+        </button>
+
+        {/* MAP SECTION AT THE VERY BOTTOM */}
+        <div className="mt-4 border-t border-border/50 pt-4">
+          <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
+            <span>Yandex Xarita orqali belgilang</span>
           </label>
-          <div className="w-full h-56 rounded-xl overflow-hidden border border-border bg-muted/50 mb-1 relative">
+          <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
             <YMaps query={{ lang: 'ru_RU' }}>
               <YMap 
                 instanceRef={(ref) => setMapInst(ref)}
@@ -184,27 +201,14 @@ export default function Checkout() {
             {/* Locate Me Button */}
             <button
               onClick={handleLocateMe}
-              className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-blue-500 active:scale-95 transition-transform z-10"
-              title="Mening joylashuvim"
+              type="button"
+              className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center text-blue-500 active:scale-95 transition-transform z-10"
             >
               <LocateFixed size={24} />
             </button>
           </div>
-          <p className="text-[10px] text-muted-foreground mb-3 text-center">Xaritani bosib manzilni belgilang yoki tugmani bosib avtomatik toping</p>
+          <p className="text-xs font-medium text-amber-600 text-center">Xaritani bosib manzilni belgilang yoki lokatsiya tugmasini bosing</p>
         </div>
-
-        <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Izoh (ixtiyoriy)</label>
-          <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
-        </div>
-
-        <button 
-          disabled={loading}
-          type="submit" 
-          className="w-full bg-primary text-primary-foreground py-4 rounded-full font-bold text-lg mt-4 disabled:opacity-70"
-        >
-          {loading ? 'Yuborilmoqda...' : 'Tasdiqlash'}
-        </button>
       </form>
     </div>
   );
