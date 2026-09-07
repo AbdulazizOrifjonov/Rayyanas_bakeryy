@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { YMaps, Map as YMap, Placemark } from '@pbe/react-yandex-maps';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
   const { cart, clearCart, user, cartTotal } = useStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
+  const [hasMoved, setHasMoved] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: user?.first_name || '',
@@ -50,7 +53,7 @@ export default function Checkout() {
         user_id: dbUser!.id,
         total_amount: totalAmount,
         status: 'new',
-        delivery_address: formData.address,
+        delivery_address: `${formData.address}${hasMoved ? ` (Link: https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map)` : ''}`,
         phone_number: formData.phone
       }).select().single();
 
@@ -74,7 +77,7 @@ export default function Checkout() {
           body: JSON.stringify({
             orderDetails: {
               phone: formData.phone,
-              address: formData.address,
+              address: `${formData.address}${hasMoved ? `\n📍 Xarita: https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : ''}`,
               comments: formData.comments,
               total: totalAmount,
               items: cart.map(i => `${i.name} (${i.quantity} dona)`).join(', ')
@@ -127,8 +130,32 @@ export default function Checkout() {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili</label>
-          <textarea required name="address" value={formData.address} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Shahar, tuman, ko'cha, uy..."></textarea>
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili (xaritadan belgilang)</label>
+          <div className="w-full h-48 rounded-xl overflow-hidden border border-border bg-muted/50 mb-2">
+            <YMaps query={{ lang: 'uz_UZ' }}>
+              <YMap 
+                defaultState={{ center: [41.2995, 69.2401], zoom: 13 }} 
+                width="100%" 
+                height="100%"
+                onClick={(e: any) => {
+                  setCoords(e.get('coords'));
+                  setHasMoved(true);
+                }}
+              >
+                {hasMoved && <Placemark geometry={coords} />}
+              </YMap>
+            </YMaps>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3 text-center">Xaritani bosib, manzilni belgilang</p>
+          
+          <input 
+            required 
+            name="address" 
+            value={formData.address} 
+            onChange={handleChange} 
+            className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary" 
+            placeholder="Ko'cha, uy raqami, mo'ljal..." 
+          />
         </div>
 
         <div>
