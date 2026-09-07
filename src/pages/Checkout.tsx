@@ -3,6 +3,7 @@ import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { YMaps, Map as YMap, Placemark } from '@pbe/react-yandex-maps';
+import { LocateFixed } from 'lucide-react';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
@@ -11,6 +12,27 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
+  const [mapInst, setMapInst] = useState<any>(null);
+
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const newCoords: [number, number] = [position.coords.latitude, position.coords.longitude];
+        setCoords(newCoords);
+        setHasMoved(true);
+        if (mapInst) {
+          mapInst.setCenter(newCoords, 16);
+        }
+      }, () => {
+        if ((window as any).Telegram?.WebApp?.showAlert) {
+          (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
+        } else {
+          alert("Lokatsiyani aniqlab bo'lmadi. GPS yoqilganini tekshiring.");
+        }
+      });
+    }
+  };
 
   const [formData, setFormData] = useState({
     firstName: user?.first_name || '',
@@ -130,11 +152,24 @@ export default function Checkout() {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili (xaritadan belgilang)</label>
-          <div className="w-full h-48 rounded-xl overflow-hidden border border-border bg-muted/50 mb-2">
+          <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili</label>
+          <textarea 
+            required 
+            name="address" 
+            value={formData.address} 
+            onChange={handleChange} 
+            className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px] mb-3" 
+            placeholder="Shahar, tuman, ko'cha, uy..." 
+          />
+
+          <label className="text-sm font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+            <span>Xaritadan belgilang (ixtiyoriy)</span>
+          </label>
+          <div className="w-full h-56 rounded-xl overflow-hidden border border-border bg-muted/50 mb-1 relative">
             <YMaps query={{ lang: 'ru_RU' }}>
               <YMap 
-                defaultState={{ center: [41.2995, 69.2401], zoom: 13 }} 
+                instanceRef={(ref) => setMapInst(ref)}
+                defaultState={{ center: [41.2995, 69.2401], zoom: 12 }} 
                 width="100%" 
                 height="100%"
                 onClick={(e: any) => {
@@ -145,17 +180,17 @@ export default function Checkout() {
                 {hasMoved && <Placemark geometry={coords} />}
               </YMap>
             </YMaps>
+            
+            {/* Locate Me Button */}
+            <button
+              onClick={handleLocateMe}
+              className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-blue-500 active:scale-95 transition-transform z-10"
+              title="Mening joylashuvim"
+            >
+              <LocateFixed size={24} />
+            </button>
           </div>
-          <p className="text-xs text-muted-foreground mb-3 text-center">Xaritani bosib, manzilni belgilang</p>
-          
-          <input 
-            required 
-            name="address" 
-            value={formData.address} 
-            onChange={handleChange} 
-            className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary" 
-            placeholder="Ko'cha, uy raqami, mo'ljal..." 
-          />
+          <p className="text-[10px] text-muted-foreground mb-3 text-center">Xaritani bosib manzilni belgilang yoki tugmani bosib avtomatik toping</p>
         </div>
 
         <div>
