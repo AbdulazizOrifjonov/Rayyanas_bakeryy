@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <div className="pb-6">
       {/* Header */}
-      <header className="px-5 pt-6 pb-4 flex justify-between items-center bg-background sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm">
+      <header className="px-5 pt-6 pb-4 flex justify-between items-center bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)]">
         <div>
           <h1 className="text-[28px] font-extrabold text-foreground tracking-tight leading-none mb-1">
             Rayyanas <span className="text-primary">Bakery</span>
