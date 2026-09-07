@@ -20,7 +20,7 @@ export default function Catalog() {
   return (
     <div className="pb-6">
       <header className="px-5 pt-6 pb-4 bg-background sticky top-0 z-10">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Menyu</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-4">Kategoriyalar</h1>
         
         {/* Category Pills */}
         <div className="flex overflow-x-auto gap-2 pb-2 -mx-5 px-5 hide-scrollbar">

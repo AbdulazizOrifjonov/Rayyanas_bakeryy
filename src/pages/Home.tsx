@@ -78,7 +78,7 @@ export default function Home() {
                   onClick={() => navigate(`/catalog?category=${cat.id}`)}
                   className="min-w-[100px] snap-start shrink-0 flex flex-col items-center gap-2 cursor-pointer group"
                 >
-                  <div className="w-20 h-20 rounded-full bg-secondary/30 border border-secondary/50 flex items-center justify-center p-4 overflow-hidden group-hover:bg-secondary/50 transition-colors">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted mb-2 border-2 border-transparent group-hover:border-amber-400 transition-colors shadow-sm">
                     {cat.image_url ? (
                       <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover rounded-full" />
                     ) : (
