@@ -8,41 +8,58 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const cart = useStore(state => state.cart);
   const addToCart = useStore(state => state.addToCart);
-  const [added, setAdded] = useState(false);
-
-  const handleAdd = () => {
-    addToCart(product);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
+  
+  const [isAdding, setIsAdding] = useState(false);
+  const inCart = cart.some(item => item.id === product.id);
 
   return (
-    <div className="bg-white rounded-[20px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-border/50 p-3 flex flex-col h-full relative overflow-hidden group">
-      <div className="aspect-square bg-muted/30 rounded-2xl mb-3 overflow-hidden relative">
+    <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 flex flex-col h-full relative transition-all active:scale-95">
+      <div className="relative aspect-square w-full overflow-hidden bg-muted">
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+          <img 
+            src={product.image_url} 
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-            {/* Fallback image placeholder */}
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30 text-4xl">
+            🎂
+          </div>
+        )}
+        {product.is_featured && (
+          <div className="absolute top-2 left-2 bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-bold px-2 py-1 rounded-md">
+            TOP
           </div>
         )}
       </div>
-      <div className="flex-1 flex flex-col">
-        <h3 className="font-bold text-sm text-foreground line-clamp-2 leading-tight mb-1">{product.name}</h3>
-        {product.description && (
-          <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2 leading-snug">{product.description}</p>
-        )}
-        <div className="mt-auto flex items-center justify-between pt-2">
-          <p className="text-primary font-bold text-sm">{product.price.toLocaleString('uz-UZ')} so'm</p>
+      
+      <div className="p-4 flex flex-col flex-1">
+        <h3 className="font-semibold text-foreground text-sm line-clamp-2 leading-tight mb-1">{product.name}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-1 mb-2">{product.description}</p>
+        
+        <div className="mt-auto flex items-end justify-between pt-2">
+          <div>
+            <p className="font-bold text-base text-primary">
+              {product.price.toLocaleString()} <span className="text-xs font-normal">so'm</span>
+            </p>
+          </div>
+          
           <button 
-            onClick={handleAdd}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-              added ? 'bg-green-500 text-white' : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            onClick={() => {
+              if (inCart) return;
+              setIsAdding(true);
+              addToCart(product);
+              setTimeout(() => setIsAdding(false), 500);
+            }}
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+              inCart 
+                ? 'bg-secondary text-secondary-foreground' 
+                : 'bg-primary text-primary-foreground shadow-md shadow-primary/30'
             }`}
           >
-            {added ? <Check size={16} /> : <Plus size={16} />}
+            {inCart ? <Check size={18} /> : <Plus size={18} className={isAdding ? 'scale-125' : ''} />}
           </button>
         </div>
       </div>

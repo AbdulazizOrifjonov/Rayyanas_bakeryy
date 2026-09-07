@@ -8,6 +8,7 @@ export interface Product {
   image_url: string;
   description?: string;
   category_id?: string;
+  is_featured?: boolean;
 }
 
 export interface CartItem extends Product {
