@@ -132,7 +132,7 @@ export default function Checkout() {
         <div>
           <label className="text-sm font-semibold text-muted-foreground mb-1 block">Yetkazib berish manzili (xaritadan belgilang)</label>
           <div className="w-full h-48 rounded-xl overflow-hidden border border-border bg-muted/50 mb-2">
-            <YMaps query={{ lang: 'uz_UZ' }}>
+            <YMaps query={{ lang: 'ru_RU' }}>
               <YMap 
                 defaultState={{ center: [41.2995, 69.2401], zoom: 13 }} 
                 width="100%" 
