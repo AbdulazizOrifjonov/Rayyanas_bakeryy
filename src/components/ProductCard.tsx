@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Plus, Check } from 'lucide-react';
 import type { Product } from '../store/useStore';
 import { useStore } from '../store/useStore';
@@ -10,12 +11,13 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const cart = useStore(state => state.cart);
   const addToCart = useStore(state => state.addToCart);
+  const navigate = useNavigate();
   
   const [isAdding, setIsAdding] = useState(false);
   const inCart = cart.some(item => item.id === product.id);
 
   return (
-    <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 flex flex-col h-full relative transition-all active:scale-95">
+    <div onClick={() => navigate('/product/' + product.id)} className="cursor-pointer bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 flex flex-col h-full relative transition-all active:scale-95">
       <div className="relative aspect-square w-full overflow-hidden bg-muted">
         {product.image_url ? (
           <img 
@@ -47,7 +49,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           
           <button 
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (inCart) return;
               setIsAdding(true);
               addToCart(product);

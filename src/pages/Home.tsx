@@ -29,16 +29,14 @@ export default function Home() {
           </h1>
           <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">By Rayyulova Nigora</p>
         </div>
-        <div className="w-11 h-11 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold shadow-sm border border-secondary/20">
-          RB
-        </div>
+        <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-amber-500/30" />
       </header>
 
       <div className="px-5">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-primary/10 to-secondary/20 rounded-[24px] p-6 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <CakeSlice size={100} />
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/80 border border-amber-200/50 rounded-[24px] p-6 mb-8 relative overflow-hidden">
+          <div className="absolute -top-4 -right-4 opacity-15">
+            <img src="/logo.jpg" alt="" className="w-32 h-32 rounded-full object-cover" />
           </div>
           <div className="relative z-10">
             <h2 className="text-2xl font-bold mb-1 text-foreground">
@@ -49,7 +47,7 @@ export default function Home() {
             </p>
             <button 
               onClick={() => navigate('/catalog')}
-              className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-semibold shadow-md active:scale-95 transition-transform"
+              className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 px-5 py-2.5 rounded-full text-sm font-semibold active:scale-95 transition-transform"
             >
               Menyuni ko'rish
             </button>
@@ -60,7 +58,7 @@ export default function Home() {
         <section className="mb-8">
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-xl font-bold text-foreground">Kategoriyalar</h2>
-            <button onClick={() => navigate('/catalog')} className="text-primary text-sm font-bold flex items-center">
+            <button onClick={() => navigate('/catalog')} className="text-amber-600 font-bold text-sm flex items-center">
               Barchasi <ChevronRight size={16} />
             </button>
           </div>
