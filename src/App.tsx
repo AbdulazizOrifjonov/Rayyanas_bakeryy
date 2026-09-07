@@ -21,11 +21,8 @@ function App() {
     WebApp.ready();
     WebApp.expand();
     
-    const themeBg = WebApp.themeParams.bg_color;
-    if (themeBg) {
-      document.documentElement.style.setProperty('--color-background', themeBg);
-    }
-    
+    // WebApp.expand(); // optionally expand
+    // We enforce our premium light/gold theme, so we ignore Telegram's bg_color
     if (WebApp.initDataUnsafe?.user) {
       setUser(WebApp.initDataUnsafe.user as any);
       
