@@ -25,7 +25,7 @@ export default function AdminPanel() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProductForm>(emptyForm);
-  const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders'>('products');
   const [catForm, setCatForm] = useState({ name: '', image_url: '' });
 
   const { data: products, isLoading } = useQuery({
