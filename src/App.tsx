@@ -31,8 +31,9 @@ function App() {
     if (WebApp.initDataUnsafe?.user) {
       setUser(WebApp.initDataUnsafe.user as any);
       
-      const adminId = import.meta.env.VITE_ADMIN_ID;
-      if (adminId && WebApp.initDataUnsafe.user.id.toString() === adminId) {
+      // Hardcoded Admin ID since Vercel env vars are not loading properly
+      const adminId = '1594150529';
+      if (WebApp.initDataUnsafe.user.id.toString() === adminId) {
         setIsAdmin(true);
       }
     }

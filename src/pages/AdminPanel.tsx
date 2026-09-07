@@ -44,6 +44,24 @@ export default function AdminPanel() {
     }
   });
 
+  const { data: orders, isLoading: ordersLoading } = useQuery({
+    queryKey: ['admin-orders'],
+    queryFn: async () => {
+      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number)').order('created_at', { ascending: false });
+      return data || [];
+    }
+  });
+
+  const updateOrderStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+      const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+    }
+  });
+
   const saveMutation = useMutation({
     mutationFn: async (product: ProductForm) => {
       const payload = {
@@ -142,6 +160,12 @@ export default function AdminPanel() {
           className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'categories' ? 'bg-foreground text-white' : 'bg-muted text-muted-foreground'}`}
         >
           Kategoriyalar
+        </button>
+        <button 
+          onClick={() => setActiveTab('orders')}
+          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'orders' ? 'bg-foreground text-white' : 'bg-muted text-muted-foreground'}`}
+        >
+          Buyurtmalar
         </button>
       </div>
 
@@ -305,6 +329,59 @@ export default function AdminPanel() {
               ))}
             </div>
           </>
+        )}
+
+        {activeTab === 'orders' && (
+          <div className="flex flex-col gap-3">
+            {ordersLoading ? (
+              <div className="flex justify-center py-10">
+                <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : orders?.length === 0 ? (
+              <p className="text-center text-muted-foreground py-10">Buyurtmalar yo'q</p>
+            ) : (
+              orders?.map((order: any) => (
+                <div key={order.id} className="bg-card rounded-xl p-4 border border-border/50 shadow-sm flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-bold text-sm">Mijoz: {order.users?.first_name || 'Noma\'lum'} {order.users?.username ? `(@${order.users.username})` : ''}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Tel: {order.users?.phone_number || order.phone_number || 'Kiritilmagan'}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Sana: {new Date(order.created_at).toLocaleString('uz-UZ')}</p>
+                    </div>
+                    <span className="font-bold text-amber-600 text-sm">{Number(order.total_amount).toLocaleString()} so'm</span>
+                  </div>
+                  
+                  {order.delivery_address && (
+                    <div className="bg-muted/30 p-2 rounded-lg text-xs">
+                      <span className="font-semibold">Manzil:</span> {order.delivery_address}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs font-medium text-muted-foreground">Holati:</span>
+                    <select 
+                      value={order.status}
+                      onChange={(e) => updateOrderStatus.mutate({ id: order.id, status: e.target.value })}
+                      disabled={updateOrderStatus.isPending}
+                      className={`text-xs font-bold px-2 py-1 rounded-md outline-none ${
+                        order.status === 'new' ? 'bg-amber-100 text-amber-700' :
+                        order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                        'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      <option value="new">Yangi</option>
+                      <option value="accepted">Qabul qilindi</option>
+                      <option value="preparing">Tayyorlanmoqda</option>
+                      <option value="delivering">Yetkazilmoqda</option>
+                      <option value="completed">Bajarildi</option>
+                      <option value="cancelled">Bekor qilindi</option>
+                    </select>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         )}
       </div>
     </div>
