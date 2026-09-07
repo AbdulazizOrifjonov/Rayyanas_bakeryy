@@ -2,9 +2,39 @@ import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { YMaps, Map as YMap, Placemark } from '@pbe/react-yandex-maps';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { LocateFixed } from 'lucide-react';
 const WebApp = (window as any).Telegram.WebApp;
+
+// Fix Leaflet default icon
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Location Marker Component
+function LocationMarker({ coords, setCoords, setHasMoved }: any) {
+  const map = useMapEvents({
+    click(e) {
+      setCoords([e.latlng.lat, e.latlng.lng]);
+      setHasMoved(true);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+  });
+
+  // We expose a global function to let the parent trigger flyTo when GPS button is clicked
+  (window as any).flyToLocation = (lat: number, lng: number) => {
+    map.flyTo([lat, lng], 16);
+  };
+
+  return coords === null ? null : (
+    <Marker position={coords}></Marker>
+  );
+}
 
 export default function Checkout() {
   const { cart, clearCart, user, cartTotal } = useStore();
@@ -12,7 +42,6 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
-  const [mapInst, setMapInst] = useState<any>(null);
 
   const handleLocateMe = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -21,9 +50,7 @@ export default function Checkout() {
         const newCoords: [number, number] = [position.coords.latitude, position.coords.longitude];
         setCoords(newCoords);
         setHasMoved(true);
-        if (mapInst) {
-          mapInst.setCenter(newCoords, 16);
-        }
+        if ((window as any).flyToLocation) (window as any).flyToLocation(newCoords[0], newCoords[1]);
       }, () => {
         if ((window as any).Telegram?.WebApp?.showAlert) {
           (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
@@ -180,23 +207,16 @@ export default function Checkout() {
         {/* MAP SECTION AT THE VERY BOTTOM */}
         <div className="mt-4 border-t border-border/50 pt-4">
           <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
-            <span>Yandex Xarita orqali belgilang</span>
+            <span>Xarita orqali belgilang</span>
           </label>
           <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-            <YMaps query={{ lang: 'ru_RU' }}>
-              <YMap 
-                instanceRef={(ref) => setMapInst(ref)}
-                defaultState={{ center: [41.2995, 69.2401], zoom: 12 }} 
-                width="100%" 
-                height="100%"
-                onClick={(e: any) => {
-                  setCoords(e.get('coords'));
-                  setHasMoved(true);
-                }}
-              >
-                {hasMoved && <Placemark geometry={coords} />}
-              </YMap>
-            </YMaps>
+            <MapContainer center={coords} zoom={13} style={{ height: '100%', width: '100%', zIndex: 0 }}>
+              <TileLayer
+                attribution='&copy; OpenStreetMap'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <LocationMarker coords={coords} setCoords={setCoords} setHasMoved={setHasMoved} />
+            </MapContainer>
             
             {/* Locate Me Button */}
             <button
