@@ -82,15 +82,28 @@ export default function AdminPanel() {
   const { data: orders, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number)').order('created_at', { ascending: false });
+      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number, telegram_id)').order('created_at', { ascending: false });
       return data || [];
     }
   });
 
   const updateOrderStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
+    mutationFn: async ({ id, status, telegramId }: { id: string, status: string, telegramId?: string }) => {
       const { error } = await supabase.from('orders').update({ status }).eq('id', id);
       if (error) throw error;
+      
+      // Notify user
+      if (telegramId && status !== 'new') {
+        try {
+          await fetch('/api/notify-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegramId, status, orderId: id })
+          });
+        } catch(e) {
+          console.error("Failed to notify user", e);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
@@ -430,7 +443,7 @@ export default function AdminPanel() {
                     <span className="text-xs font-medium text-muted-foreground">Holati:</span>
                     <select 
                       value={order.status}
-                      onChange={(e) => updateOrderStatus.mutate({ id: order.id, status: e.target.value })}
+                      onChange={(e) => updateOrderStatus.mutate({ id: order.id, status: e.target.value, telegramId: order.users?.telegram_id })}
                       disabled={updateOrderStatus.isPending}
                       className={`text-xs font-bold px-2 py-1 rounded-md outline-none ${
                         order.status === 'new' ? 'bg-amber-100 text-amber-700' :

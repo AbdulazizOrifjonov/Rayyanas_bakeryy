@@ -1,4 +1,4 @@
-import { Plus, Minus, Heart } from 'lucide-react';
+import { Plus, Minus, Heart, ShoppingCart } from 'lucide-react';
 import type { Product } from '../store/useStore';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
@@ -81,8 +81,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation();
                 addToCart(product);
               }}
-              className="w-full py-2.5 rounded-xl bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center gap-2 active:bg-amber-200 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center gap-1.5 active:bg-amber-200 transition-colors"
             >
+              <ShoppingCart size={14} />
               Savatga qo'shish
             </button>
           )}

@@ -17,6 +17,16 @@ export default function Profile() {
     }
   });
 
+  const { data: newOrdersCount } = useQuery({
+    queryKey: ['admin-new-orders-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'new');
+      return count || 0;
+    },
+    enabled: isAdmin,
+    refetchInterval: 10000 // Refetch every 10 seconds to keep badge fresh
+  });
+
   return (
     <div className="pb-6">
       <header className="px-5 pt-6 pb-4 bg-white sticky top-0 z-30 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.06)]">
@@ -43,10 +53,15 @@ export default function Profile() {
         {isAdmin && (
           <button 
             onClick={() => navigate('/admin')}
-            className="w-full bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/50 rounded-2xl p-4 mb-6 flex items-center gap-3 active:scale-[0.98] transition-transform"
+            className="w-full bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/50 rounded-2xl p-4 mb-6 flex items-center gap-3 active:scale-[0.98] transition-transform relative"
           >
             <ShieldAlert size={20} className="text-red-500" />
             <span className="text-sm font-bold text-red-700 flex-1 text-left">Admin Panel</span>
+            {newOrdersCount && newOrdersCount > 0 ? (
+              <div className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
+                {newOrdersCount} yangi
+              </div>
+            ) : null}
             <ChevronRight size={16} className="text-red-400" />
           </button>
         )}
