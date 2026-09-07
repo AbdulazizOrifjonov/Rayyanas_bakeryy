@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';
 
 export default function Home() {
-  const { user } = useStore();
   const navigate = useNavigate();
 
   const { data: categories, isLoading: catsLoading } = useQuery({
