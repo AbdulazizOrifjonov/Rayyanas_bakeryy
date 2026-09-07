@@ -35,8 +35,8 @@ export default function Home() {
       <div className="px-5">
         {/* Banner */}
         <div className="bg-gradient-to-br from-amber-50 to-amber-100/80 border border-amber-200/50 rounded-[24px] p-6 mb-8 relative overflow-hidden">
-          <div className="absolute -top-4 -right-4 opacity-15">
-            <img src="/logo.jpg" alt="" className="w-32 h-32 rounded-full object-cover" />
+          <div className="absolute -top-2 -right-2">
+            <img src="/logo.jpg" alt="" className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-amber-300/40" />
           </div>
           <div className="relative z-10">
             <h2 className="text-2xl font-bold mb-1 text-foreground">
