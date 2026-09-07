@@ -151,7 +151,34 @@ export default function Checkout() {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('address_label', lang)}</label>
+          <label className="text-sm font-semibold text-muted-foreground mb-2 flex items-center justify-between">
+            <span>{t('address_label', lang)}</span>
+          </label>
+
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                  const link = `https://yandex.com/maps/?pt=${pos.coords.longitude},${pos.coords.latitude}&z=17&l=map`;
+                  setFormData(prev => ({ ...prev, address: prev.address ? prev.address + '\n📍 ' + link : '📍 ' + link }));
+                  if ((window as any).Telegram?.WebApp?.showAlert) {
+                    (window as any).Telegram.WebApp.showAlert("Lokatsiya manzilga qo'shildi!");
+                  }
+                }, () => {
+                  if ((window as any).Telegram?.WebApp?.showAlert) {
+                    (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
+                  }
+                });
+              }
+            }}
+            className="w-full mb-3 bg-blue-50 text-blue-600 border border-blue-200 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:bg-blue-100 transition-colors"
+          >
+            <LocateFixed size={18} />
+            Hozirgi joylashuvimni aniqlash
+          </button>
+
           <textarea 
             required 
             name="address" 
