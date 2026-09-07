@@ -148,7 +148,7 @@ export default function Checkout() {
               e.preventDefault();
               if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
-                  const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                  const link = `https://yandex.com/maps/?pt=${pos.coords.longitude},${pos.coords.latitude}&z=17&l=map`;
                   setFormData(prev => ({ ...prev, address: prev.address ? prev.address + '\n📍 ' + link : '📍 ' + link }));
                   if ((window as any).Telegram?.WebApp?.showAlert) {
                     (window as any).Telegram.WebApp.showAlert("Lokatsiya manzilga qo'shildi!");
