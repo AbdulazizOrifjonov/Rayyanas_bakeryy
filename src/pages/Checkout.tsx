@@ -47,7 +47,7 @@ export default function Checkout() {
       // Insert Order
       const totalAmount = cartTotal();
       const { data: order, error: orderError } = await supabase.from('orders').insert({
-        user_id: dbUser.id,
+        user_id: dbUser!.id,
         total_amount: totalAmount,
         status: 'new',
         delivery_address: formData.address,
