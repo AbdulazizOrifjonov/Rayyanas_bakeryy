@@ -70,7 +70,7 @@ export default function Home() {
       <div className="px-5">
         {/* Banner */}
         <div className="bg-gradient-to-br from-amber-50 to-amber-100/80 border border-amber-200/50 rounded-[24px] p-6 mb-8 relative mt-4 shadow-sm">
-          <div className="absolute -top-4 -right-1 z-0 animate-float">
+          <div className="absolute top-2 right-0 z-0 animate-float">
             <img src="/logo.jpg" alt="" className="w-24 h-24 rounded-full object-cover shadow-md border-[3px] border-amber-300/60" />
           </div>
           <div className="relative z-10">
