@@ -1,39 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useStore } from '../store/useStore';
 import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import { LocateFixed } from 'lucide-react';
+import YandexMap from '../components/YandexMap';
 const WebApp = (window as any).Telegram.WebApp;
-
-// Fix Leaflet default icon
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
-
-function LocationMarker({ coords, setCoords, setHasMoved }: any) {
-  const map = useMapEvents({
-    click(e) {
-      setCoords([e.latlng.lat, e.latlng.lng]);
-      setHasMoved(true);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
-
-  (window as any).flyToLocation = (lat: number, lng: number) => {
-    map.flyTo([lat, lng], 16);
-  };
-
-  return coords === null ? null : (
-    <Marker position={coords}></Marker>
-  );
-}
 
 export default function Checkout() {
   const { cart, clearCart, user, cartTotal, lang } = useStore();
@@ -41,23 +13,11 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
+  const yandexMapRef = useRef<any>(null);
 
-  const handleLocateMe = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const newCoords: [number, number] = [position.coords.latitude, position.coords.longitude];
-        setCoords(newCoords);
-        setHasMoved(true);
-        if ((window as any).flyToLocation) (window as any).flyToLocation(newCoords[0], newCoords[1]);
-      }, () => {
-        if ((window as any).Telegram?.WebApp?.showAlert) {
-          (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
-        } else {
-          alert("Lokatsiyani aniqlab bo'lmadi. GPS yoqilganini tekshiring.");
-        }
-      });
-    }
+  const handleMapClick = (newCoords: [number, number]) => {
+    setCoords(newCoords);
+    setHasMoved(true);
   };
 
   const [formData, setFormData] = useState({
@@ -233,28 +193,19 @@ export default function Checkout() {
         {/* MAP SECTION AT THE VERY BOTTOM */}
         <div className="mt-4 border-t border-border/50 pt-4">
           <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
-            <span>{t('map_label', lang)}</span>
-          </label>
-          <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-            <MapContainer center={coords} zoom={13} style={{ height: '100%', width: '100%', zIndex: 0 }}>
-              <TileLayer
-                url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-                subdomains={['mt0','mt1','mt2','mt3']}
-                attribution="&copy; Google Maps"
-              />
-              <LocationMarker coords={coords} setCoords={setCoords} setHasMoved={setHasMoved} />
-            </MapContainer>
-            
-            {/* Locate Me Button */}
-            <button
-              onClick={handleLocateMe}
-              type="button"
-              className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-xl border border-gray-100 flex items-center justify-center text-blue-500 active:scale-95 transition-transform z-10"
-            >
-              <LocateFixed size={24} />
-            </button>
-          </div>
-          <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
+<span>{t('map_label', lang)}</span>
+        </label>
+        <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
+          <YandexMap
+            ref={yandexMapRef}
+            center={coords}
+            zoom={13}
+            onMapClick={handleMapClick}
+            onLocationSelect={handleMapClick}
+            markerCoords={hasMoved ? coords : null}
+          />
+        </div>
+        <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
         </div>
       </form>
     </div>

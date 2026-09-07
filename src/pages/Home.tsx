@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';
+import Marquee from 'react-fast-marquee';
 import { t, translateDynamic } from '../lib/i18n';
 import { useStore } from '../store/useStore';
 
@@ -97,31 +98,37 @@ export default function Home() {
             </button>
           </div>
           
-          <div className="flex overflow-x-auto gap-3 pb-2 -mx-5 px-5 snap-x hide-scrollbar">
+          <div className="-mx-5 mt-2">
             {catsLoading ? (
               // Skeletons
-              [1,2,3,4].map(i => (
-                <div key={i} className="min-w-[100px] h-[110px] bg-muted/50 rounded-2xl animate-pulse shrink-0"></div>
-              ))
+              <div className="flex overflow-hidden gap-3 pb-2 px-5">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="min-w-[100px] h-[110px] bg-muted/50 rounded-2xl animate-pulse shrink-0"></div>
+                ))}
+              </div>
             ) : categories?.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-4">Kategoriyalar mavjud emas</p>
+              <p className="text-muted-foreground text-sm py-4 px-5">Kategoriyalar mavjud emas</p>
             ) : (
-              categories?.map(cat => (
-                <div 
-                  key={cat.id} 
-                  onClick={() => navigate(`/catalog?category=${cat.id}`)}
-                  className="min-w-[100px] snap-start shrink-0 flex flex-col items-center gap-2 cursor-pointer group"
-                >
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted mb-2 border-2 border-transparent group-hover:border-amber-400 transition-colors shadow-sm">
-                    {cat.image_url ? (
-                      <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full" />
-                    )}
+              <Marquee pauseOnHover={true} pauseOnClick={true} speed={30} gradient={true} gradientColor="white" gradientWidth={30}>
+                {categories?.map(cat => (
+                  <div 
+                    key={cat.id} 
+                    onClick={() => navigate(`/catalog?category=${cat.id}`)}
+                    className="w-[100px] shrink-0 flex flex-col items-center gap-2 cursor-pointer group mx-1.5 pb-2"
+                  >
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted border-2 border-transparent active:border-amber-400 transition-colors shadow-sm">
+                      {cat.image_url ? (
+                        <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover pointer-events-none" />
+                      ) : (
+                        <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full p-4 pointer-events-none" />
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold text-center text-foreground line-clamp-2 leading-tight">
+                      {cat.name}
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold text-center leading-tight">{cat.name}</span>
-                </div>
-              ))
+                ))}
+              </Marquee>
             )}
           </div>
         </section>
