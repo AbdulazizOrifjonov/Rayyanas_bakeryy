@@ -1,7 +1,7 @@
 import { useStore } from '../store/useStore';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import WebApp from '@twa-dev/sdk';
+const WebApp = (window as any).Telegram.WebApp;
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal } = useStore();

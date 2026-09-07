@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
-
-import WebApp from '@twa-dev/sdk';
+const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
   const { cart, clearCart, user } = useStore();

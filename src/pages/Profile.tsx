@@ -1,6 +1,6 @@
 import { useStore } from '../store/useStore';
 import { Settings, ShieldAlert, Package, LogOut } from 'lucide-react';
-import WebApp from '@twa-dev/sdk';
+const WebApp = (window as any).Telegram.WebApp;
 
 export default function Profile() {
   const { user, isAdmin } = useStore();

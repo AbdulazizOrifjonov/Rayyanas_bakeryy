@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
-import WebApp from '@twa-dev/sdk';
+const WebApp = (window as any).Telegram.WebApp;
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useStore } from './store/useStore';
 import Layout from './components/Layout';
