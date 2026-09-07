@@ -120,13 +120,13 @@ export async function translateDynamic(texts: string[], targetLang: Language): P
   }
 
   try {
-    const query = encodeURIComponent(texts.join(' \\n '));
+    const query = encodeURIComponent(texts.join('\n'));
     const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=uz&tl=${targetLang}&dt=t&q=${query}`);
     const data = await res.json();
     
     // data[0] is an array of translated lines
     const translatedText = data[0].map((item: any) => item[0]).join('');
-    const result = translatedText.split('\\n').map(s => s.trim());
+    const result = translatedText.split('\n').map((s: string) => s.trim());
     
     // Fallback if mismatch
     if (result.length !== texts.length) return texts;

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '../lib/supabase';
-import { api } from '../lib/api';
+
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import { CakeSlice, ChevronRight } from 'lucide-react';

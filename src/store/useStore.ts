@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Language } from '../lib/i18n';
+import type { Language } from '../lib/i18n';
 
 export interface Product {
   id: string;
