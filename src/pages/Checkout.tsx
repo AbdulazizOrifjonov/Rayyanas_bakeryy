@@ -3,9 +3,37 @@ import { useStore } from '../store/useStore';
 import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { YMaps, Map as YMap, Placemark } from '@pbe/react-yandex-maps';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { LocateFixed } from 'lucide-react';
 const WebApp = (window as any).Telegram.WebApp;
+
+// Fix Leaflet default icon
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+function LocationMarker({ coords, setCoords, setHasMoved }: any) {
+  const map = useMapEvents({
+    click(e) {
+      setCoords([e.latlng.lat, e.latlng.lng]);
+      setHasMoved(true);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+  });
+
+  (window as any).flyToLocation = (lat: number, lng: number) => {
+    map.flyTo([lat, lng], 16);
+  };
+
+  return coords === null ? null : (
+    <Marker position={coords}></Marker>
+  );
+}
 
 export default function Checkout() {
   const { cart, clearCart, user, cartTotal, lang } = useStore();
@@ -13,7 +41,6 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
-  const [mapInst, setMapInst] = useState<any>(null);
 
   const handleLocateMe = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -22,7 +49,7 @@ export default function Checkout() {
         const newCoords: [number, number] = [position.coords.latitude, position.coords.longitude];
         setCoords(newCoords);
         setHasMoved(true);
-        if (mapInst) mapInst.setCenter(newCoords, 16);
+        if ((window as any).flyToLocation) (window as any).flyToLocation(newCoords[0], newCoords[1]);
       }, () => {
         if ((window as any).Telegram?.WebApp?.showAlert) {
           (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
@@ -74,7 +101,7 @@ export default function Checkout() {
         user_id: dbUser!.id,
         total_amount: totalAmount,
         status: 'new',
-        delivery_address: `${formData.address}${hasMoved ? ` (Link: https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map)` : ''}`,
+        delivery_address: `${formData.address}${hasMoved ? ` (Link: https://www.google.com/maps?q=${coords[0]},${coords[1]})` : ''}`,
         phone_number: formData.phone
       }).select().single();
 
@@ -98,7 +125,7 @@ export default function Checkout() {
           body: JSON.stringify({
             orderDetails: {
               phone: formData.phone,
-              address: `${formData.address}${hasMoved ? `\n📍 Xarita: https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : ''}`,
+              address: `${formData.address}${hasMoved ? `\n📍 Google Xarita: https://www.google.com/maps?q=${coords[0]},${coords[1]}` : ''}`,
               comments: formData.comments,
               total: totalAmount,
               items: cart.map(i => `${i.name} (${i.quantity} dona)`).join(', ')
@@ -161,7 +188,7 @@ export default function Checkout() {
               e.preventDefault();
               if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
-                  const link = `https://yandex.com/maps/?pt=${pos.coords.longitude},${pos.coords.latitude}&z=17&l=map`;
+                  const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
                   setFormData(prev => ({ ...prev, address: prev.address ? prev.address + '\n📍 ' + link : '📍 ' + link }));
                   if ((window as any).Telegram?.WebApp?.showAlert) {
                     (window as any).Telegram.WebApp.showAlert("Lokatsiya manzilga qo'shildi!");
@@ -209,20 +236,14 @@ export default function Checkout() {
             <span>{t('map_label', lang)}</span>
           </label>
           <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-            <YMaps query={{ lang: 'ru_RU' }}>
-              <YMap 
-                instanceRef={(ref) => setMapInst(ref)}
-                defaultState={{ center: [41.2995, 69.2401], zoom: 12 }} 
-                width="100%" 
-                height="100%"
-                onClick={(e: any) => {
-                  setCoords(e.get('coords'));
-                  setHasMoved(true);
-                }}
-              >
-                {hasMoved && <Placemark geometry={coords} />}
-              </YMap>
-            </YMaps>
+            <MapContainer center={coords} zoom={13} style={{ height: '100%', width: '100%', zIndex: 0 }}>
+              <TileLayer
+                url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                subdomains={['mt0','mt1','mt2','mt3']}
+                attribution="&copy; Google Maps"
+              />
+              <LocationMarker coords={coords} setCoords={setCoords} setHasMoved={setHasMoved} />
+            </MapContainer>
             
             {/* Locate Me Button */}
             <button
