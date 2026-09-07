@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FDFBF7;
+  --color-foreground: #3D2619;
+  
+  --color-primary: #D4AF37;
+  --color-primary-foreground: #FFFFFF;
+  
+  --color-secondary: #E5A99C;
+  --color-secondary-foreground: #3D2619;
+  
+  --color-muted: #F5EFEB;
+  --color-muted-foreground: #8E7C73;
+  
+  --color-border: #E8E0D9;
+  
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    /* Hide scrollbar for cleaner look in mini app */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  body::-webkit-scrollbar {
+    display: none;
+  }
+}
