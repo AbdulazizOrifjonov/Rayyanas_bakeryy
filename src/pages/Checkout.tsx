@@ -85,7 +85,7 @@ export default function Checkout() {
           body: JSON.stringify({
             orderDetails: {
               phone: formData.phone,
-              address: `${formData.address}${hasMoved ? `\n📍 Google Xarita: https://www.google.com/maps?q=${coords[0]},${coords[1]}` : ''}`,
+              address: `${formData.address}${hasMoved ? `\n📍 Yandex Xarita: https://yandex.ru/maps/?ll=${coords[1]},${coords[0]}&z=16` : ''}`,
               comments: formData.comments,
               total: totalAmount,
               items: cart.map(i => `${i.name} (${i.quantity} dona)`).join(', ')
