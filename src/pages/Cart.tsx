@@ -1,10 +1,10 @@
 import { useStore } from '../store/useStore';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, cartTotal } = useStore();
+  const { cart, removeFromCart, updateQuantity, cartTotal, toggleFavorite, isFavorite } = useStore();
   const navigate = useNavigate();
 
   const total = cartTotal();
@@ -37,7 +37,7 @@ export default function Cart() {
 
       <div className="px-5 py-4 flex flex-col gap-4">
         {cart.map(item => (
-          <div key={item.id} className="bg-white rounded-2xl p-3 flex gap-4 shadow-sm border border-border/50 items-center">
+          <div key={item.id} className="bg-white rounded-2xl p-3 flex gap-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] border border-border/60 items-stretch">
             <div className="w-20 h-20 bg-muted/30 rounded-xl overflow-hidden shrink-0">
               {item.image_url ? (
                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
@@ -48,27 +48,33 @@ export default function Cart() {
               )}
             </div>
             
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-sm truncate mb-1">{item.name}</h3>
-              <p className="text-primary font-bold text-sm mb-3">{item.price.toLocaleString('uz-UZ')} so'm</p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 bg-muted/50 rounded-full px-2 py-1">
+            <div className="flex-1 min-w-0 flex justify-between">
+              <div className="flex-1">
+                <h3 className="font-bold text-sm truncate mb-1 pr-2">{item.name}</h3>
+                <p className="text-amber-600 font-bold text-sm mb-2">{item.price.toLocaleString('uz-UZ')} so'm</p>
+                <div className="flex items-center justify-between bg-amber-50 rounded-xl border border-amber-200/60 p-1 w-fit">
                   <button 
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="w-6 h-6 rounded-full bg-background shadow-sm flex items-center justify-center text-foreground"
+                    className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-amber-600 active:bg-amber-100"
                   >
                     <Minus size={14} />
                   </button>
-                  <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
+                  <span className="font-bold text-sm px-3">{item.quantity}</span>
                   <button 
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="w-6 h-6 rounded-full bg-background shadow-sm flex items-center justify-center text-foreground"
+                    className="w-7 h-7 rounded-lg bg-amber-500 text-white shadow-sm flex items-center justify-center active:bg-amber-600"
                   >
                     <Plus size={14} />
                   </button>
                 </div>
-                
+              </div>
+              <div className="flex flex-col justify-between items-end pb-1 gap-2">
+                <button 
+                  onClick={() => toggleFavorite(item)}
+                  className="p-2 -mr-2 active:scale-95 transition-transform"
+                >
+                  <Heart size={20} className={isFavorite(item.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+                </button>
                 <button 
                   onClick={() => removeFromCart(item.id)}
                   className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-95 transition-transform"

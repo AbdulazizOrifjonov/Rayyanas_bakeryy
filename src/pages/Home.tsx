@@ -80,7 +80,7 @@ export default function Home() {
                 >
                   <div className="w-20 h-20 rounded-2xl overflow-hidden bg-muted mb-2 border-2 border-transparent group-hover:border-amber-400 transition-colors shadow-sm">
                     {cat.image_url ? (
-                      <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover rounded-full" />
+                      <img src={cat.image_url} alt={cat.name} className="w-full h-full object-cover" />
                     ) : (
                       <CakeSlice className="text-secondary-foreground opacity-50 w-full h-full" />
                     )}
