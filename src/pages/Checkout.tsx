@@ -4,7 +4,7 @@ import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { LocateFixed } from 'lucide-react';
-import YandexMap from '../components/YandexMap';
+import LeafletMap from '../components/LeafletMap';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
@@ -13,7 +13,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
-  const yandexMapRef = useRef<any>(null);
+
 
   const handleMapClick = (newCoords: [number, number]) => {
     setCoords(newCoords);
@@ -200,11 +200,9 @@ export default function Checkout() {
 <span>{t('map_label', lang)}</span>
         </label>
         <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-          <YandexMap
-            ref={yandexMapRef}
+          <LeafletMap
             center={coords}
             zoom={13}
-            onMapClick={handleMapClick}
             onLocationSelect={handleMapClick}
             markerCoords={hasMoved ? coords : null}
           />
