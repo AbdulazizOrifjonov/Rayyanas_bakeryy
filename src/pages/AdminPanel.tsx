@@ -82,7 +82,7 @@ export default function AdminPanel() {
   const { data: orders, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number, telegram_id)').order('created_at', { ascending: false });
+      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number, telegram_id), order_items(*, products(name))').order('created_at', { ascending: false });
       return data || [];
     }
   });
@@ -433,9 +433,39 @@ export default function AdminPanel() {
                     <span className="font-bold text-amber-600 text-sm">{Number(order.total_amount).toLocaleString()} so'm</span>
                   </div>
                   
+                  {order.order_items && order.order_items.length > 0 && (
+                    <div className="bg-amber-50/50 p-2.5 rounded-xl text-xs space-y-1 border border-amber-100 mt-1">
+                      <p className="font-bold text-amber-900 mb-1.5 border-b border-amber-200/50 pb-1.5">Sotib olinganlar:</p>
+                      {order.order_items.map((item: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center text-amber-800">
+                          <span>▪️ {item.products?.name || 'Noma\'lum'}</span>
+                          <span className="font-bold bg-amber-100 px-1.5 py-0.5 rounded-md">{item.quantity} ta</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
                   {order.delivery_address && (
-                    <div className="bg-muted/30 p-2 rounded-lg text-xs">
-                      <span className="font-semibold">Manzil:</span> {order.delivery_address}
+                    <div className="bg-blue-50/50 p-2.5 rounded-xl text-xs border border-blue-100 flex flex-col gap-1">
+                      <span className="font-bold text-blue-900">Manzil:</span>
+                      <p className="text-blue-800 break-words whitespace-pre-wrap leading-relaxed">
+                        {order.delivery_address.split(/(https?:\/\/[^\s]+)/g).map((part: string, i: number) => 
+                          part.match(/^https?:\/\//) ? (
+                            <a key={i} href={part} target="_blank" rel="noreferrer" className="inline-block mt-1.5 bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm active:scale-95 transition-transform">
+                              📍 Xaritada ko'rish
+                            </a>
+                          ) : (
+                            part.replace('(Link: ', '').replace(')', '').replace('📍 Yandex Map: ', '')
+                          )
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {order.comments && order.comments !== '-' && (
+                    <div className="bg-gray-50/80 p-2.5 rounded-xl text-xs border border-gray-100 flex flex-col gap-0.5">
+                      <span className="font-bold text-gray-700">Izoh:</span>
+                      <p className="text-gray-600 italic">"{order.comments}"</p>
                     </div>
                   )}
 

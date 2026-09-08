@@ -61,7 +61,7 @@ export default function Checkout() {
         user_id: dbUser!.id,
         total_amount: totalAmount,
         status: 'new',
-        delivery_address: `${formData.address}${hasMoved ? ` (Link: https://yandex.ru/maps/?ll=${coords[1]},${coords[0]}&z=16)` : ''}`,
+        delivery_address: formData.address + (hasMoved ? `\n📍 Yandex Map: https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : ''),
         phone_number: formData.phone
       }).select().single();
 
