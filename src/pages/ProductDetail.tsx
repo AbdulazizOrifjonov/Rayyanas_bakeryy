@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useStore } from '../store/useStore';
 import { ArrowLeft, Plus, Minus, ShoppingCart, Heart, Share2, Info } from 'lucide-react';
 import { useState } from 'react';
+import { parseImages } from '../utils/imageParser';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -43,16 +44,32 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-[#F8F9FA] pb-6">
       {/* Header inside image */}
       <div className="relative w-full aspect-[4/5] bg-white overflow-hidden rounded-b-[40px] shadow-sm">
-        {product.image_url ? (
-          <img 
-            src={product.image_url} 
-            alt={product.name}
-            onLoad={() => setImgLoaded(true)}
-            onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?w=500&q=80'; }}
-            className={`w-full h-full object-cover transition-opacity duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl bg-amber-50/50">🎂</div>
+        {(() => {
+          const imgs = parseImages(product.image_url);
+          if (imgs.length > 0) {
+            return (
+              <div className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                {imgs.map((img, idx) => (
+                  <img 
+                    key={idx}
+                    src={img} 
+                    alt={product.name}
+                    onLoad={() => setImgLoaded(true)}
+                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?w=500&q=80'; }}
+                    className={`w-full h-full object-cover shrink-0 snap-center transition-opacity duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  />
+                ))}
+              </div>
+            );
+          }
+          return <div className="w-full h-full flex items-center justify-center text-6xl bg-amber-50/50">🎂</div>;
+        })()}
+        {parseImages(product.image_url).length > 1 && (
+          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 pointer-events-none z-10">
+            {parseImages(product.image_url).map((_, idx) => (
+              <div key={idx} className="w-2 h-2 rounded-full bg-white/70 shadow-sm" />
+            ))}
+          </div>
         )}
         
         {/* Navigation Bar overlaid on image */}

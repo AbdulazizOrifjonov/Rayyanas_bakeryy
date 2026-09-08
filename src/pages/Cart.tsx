@@ -2,6 +2,7 @@ import { useStore } from '../store/useStore';
 import { Minus, Plus, Trash2, ShoppingBag, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { t } from '../lib/i18n';
+import { parseImages } from '../utils/imageParser';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Cart() {
@@ -40,8 +41,8 @@ export default function Cart() {
         {cart.map(item => (
           <div key={item.id} className="bg-white rounded-2xl p-3 flex gap-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] border border-border/60 items-stretch">
             <div className="w-20 h-20 bg-muted/30 rounded-xl overflow-hidden shrink-0">
-              {item.image_url ? (
-                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+              {parseImages(item.image_url)[0] ? (
+                <img src={parseImages(item.image_url)[0]} alt={item.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
                   <ShoppingBag size={24} />

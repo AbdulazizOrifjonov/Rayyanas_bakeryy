@@ -259,34 +259,52 @@ export default function AdminPanel() {
                       onChange={e => setForm({...form, price: e.target.value})}
                       className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
                     />
-                    <div className="flex gap-2">
-                      <input
-                        placeholder="Rasm URL yozing yoki fayl tanlang"
-                        value={form.image_url}
-                        onChange={e => setForm({...form, image_url: e.target.value})}
-                        className="flex-1 bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-amber-500"
-                      />
-                      <label className="w-12 h-[46px] rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 cursor-pointer shrink-0 border border-amber-200">
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const base64 = await resizeImage(file);
-                              setForm({...form, image_url: base64});
-                            }
-                          }} 
-                        />
-                        <Image size={20} />
-                      </label>
-                    </div>
-                    {form.image_url && (
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted">
-                        <img src={form.image_url} alt="" className="w-full h-full object-cover" />
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-muted-foreground block">Rasmlar (Max 5 ta)</label>
+                      <div className="flex flex-wrap gap-2">
+                        {(() => {
+                          const imgs = form.image_url ? (form.image_url.startsWith('[') ? JSON.parse(form.image_url) : [form.image_url]) : [];
+                          return imgs.map((img: string, idx: number) => (
+                            <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-border">
+                              <img src={img} className="w-full h-full object-cover" />
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const arr = [...imgs];
+                                  arr.splice(idx, 1);
+                                  setForm({...form, image_url: arr.length ? JSON.stringify(arr) : ''});
+                                }}
+                                className="absolute top-0 right-0 bg-red-500/80 text-white p-1 rounded-bl-lg"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ));
+                        })()}
+                        {(!form.image_url || (form.image_url.startsWith('[') ? JSON.parse(form.image_url).length : 1) < 5) && (
+                          <label className="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 cursor-pointer border border-amber-200">
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              multiple
+                              className="hidden" 
+                              onChange={async (e) => {
+                                const files = Array.from(e.target.files || []);
+                                let current = form.image_url ? (form.image_url.startsWith('[') ? JSON.parse(form.image_url) : [form.image_url]) : [];
+                                for(const file of files) {
+                                  if (current.length >= 5) break;
+                                  const base64 = await resizeImage(file);
+                                  current.push(base64);
+                                }
+                                setForm({...form, image_url: JSON.stringify(current)});
+                              }} 
+                            />
+                            <Plus size={24} />
+                          </label>
+                        )}
                       </div>
-                    )}
+                    </div>
+
                     <select
                       value={form.category_id}
                       onChange={e => setForm({...form, category_id: e.target.value})}
@@ -332,7 +350,11 @@ export default function AdminPanel() {
                 {products?.map((p: any) => (
                   <div key={p.id} className="bg-card rounded-xl p-3 border border-border/50 shadow-sm flex gap-3">
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
-                      {p.image_url ? <img src={p.image_url} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🎂</div>}
+                      {(() => {
+                        const imgUrl = p.image_url;
+                        const firstImg = imgUrl ? (imgUrl.startsWith('[') ? JSON.parse(imgUrl)[0] : imgUrl) : null;
+                        return firstImg ? <img src={firstImg} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🎂</div>;
+                      })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-sm truncate">{p.name}</h3>
@@ -440,11 +462,15 @@ export default function AdminPanel() {
                         <div key={idx} className="flex justify-between items-center bg-white p-2 rounded-lg border border-amber-100/50 shadow-sm text-amber-900">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-md overflow-hidden bg-muted shrink-0 border border-border/50">
-                              {item.products?.image_url ? (
-                                <img src={item.products.image_url} alt="" className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="w-full h-full flex items-center justify-center text-lg">🎂</span>
-                              )}
+                              {(() => {
+                                const imgUrl = item.products?.image_url;
+                                const firstImg = imgUrl ? (imgUrl.startsWith('[') ? JSON.parse(imgUrl)[0] : imgUrl) : null;
+                                return firstImg ? (
+                                  <img src={firstImg} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="w-full h-full flex items-center justify-center text-lg">🎂</span>
+                                );
+                              })()}
                             </div>
                             <span className="font-semibold text-xs leading-tight">{item.products?.name || 'Noma\'lum'}</span>
                           </div>

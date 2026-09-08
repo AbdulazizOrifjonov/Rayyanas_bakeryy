@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { LocateFixed } from 'lucide-react';
 import LeafletMap from '../components/LeafletMap';
+import { parseImages } from '../utils/imageParser';
 const WebApp = (window as any).Telegram.WebApp;
 
 export default function Checkout() {
@@ -91,7 +92,7 @@ export default function Checkout() {
               mapLink: hasMoved && !formData.address.includes('yandex') ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
               comments: formData.comments,
               total: totalAmount,
-              items: cart.map(i => ({ name: i.name, quantity: i.quantity, id: i.id, image_url: i.image_url }))
+              items: cart.map(i => ({ name: i.name, quantity: i.quantity, id: i.id, image_url: parseImages(i.image_url)[0] }))
             },
             userDetails: {
               firstName: formData.firstName,

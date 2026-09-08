@@ -3,6 +3,7 @@ import type { Product } from '../store/useStore';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { t } from '../lib/i18n';
+import { parseImages } from '../utils/imageParser';
 
 interface ProductCardProps {
   product: Product;
@@ -28,16 +29,35 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] border border-border/40 flex flex-col h-full relative transition-all active:scale-95 cursor-pointer"
     >
       <div className="relative aspect-square w-full overflow-hidden bg-muted/30 p-2">
-        {product.image_url ? (
-          <img 
-            src={product.image_url} 
-            alt={product.name}
-            onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?w=500&q=80'; }}
-            className="w-full h-full object-cover rounded-xl transition-transform duration-500 hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full rounded-xl flex items-center justify-center text-muted-foreground/30 text-4xl bg-muted/50">
-            🎂
+        {(() => {
+          const imgs = parseImages(product.image_url);
+          if (imgs.length > 0) {
+            return (
+              <div className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                {imgs.map((img, idx) => (
+                  <img 
+                    key={idx}
+                    src={img} 
+                    alt={product.name}
+                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?w=500&q=80'; }}
+                    className="w-full h-full object-cover rounded-xl shrink-0 snap-center pointer-events-none"
+                  />
+                ))}
+              </div>
+            );
+          }
+          return (
+            <div className="w-full h-full rounded-xl flex items-center justify-center text-muted-foreground/30 text-4xl bg-muted/50">
+              🎂
+            </div>
+          );
+        })()}
+        
+        {parseImages(product.image_url).length > 1 && (
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10">
+            {parseImages(product.image_url).map((_, idx) => (
+              <div key={idx} className="w-1.5 h-1.5 rounded-full bg-white/70 shadow-sm" />
+            ))}
           </div>
         )}
         {product.is_featured && (
