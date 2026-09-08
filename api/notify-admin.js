@@ -21,15 +21,19 @@ export default async function handler(req, res) {
     const message = `
 🆕 <b>YANGI BUYURTMA</b>
 
-👤 Mijoz: ${userDetails.firstName} ${userDetails.lastName || ''}
-📱 Telefon: ${orderDetails.phone}
-📍 Manzil: ${orderDetails.address}
-🛒 Mahsulotlar: ${orderDetails.items || '-'}
-💬 Izoh: ${orderDetails.comments || '-'}
+👤 <b>Mijoz:</b> ${userDetails.firstName} ${userDetails.lastName || ''} ${userDetails.username ? `(@${userDetails.username})` : ''}
+📞 <b>Telefon:</b> ${orderDetails.phone}
 
-💰 Umumiy summa: <b>${orderDetails.total.toLocaleString('uz-UZ')} so'm</b>
+🛒 <b>Mahsulotlar:</b>
+${orderDetails.items}
 
-Username: @${userDetails.username || 'yoq'}
+💬 <b>Izoh:</b> ${orderDetails.comments || 'yo\'q'}
+
+💰 <b>Umumiy summa:</b> ${orderDetails.total.toLocaleString('uz-UZ')} so'm
+
+📍 <b>Manzil (matn):</b>
+${orderDetails.addressText}
+${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetails.mapLink}">${orderDetails.mapLink}</a>` : ''}
     `.trim();
 
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

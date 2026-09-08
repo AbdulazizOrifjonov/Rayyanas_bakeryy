@@ -85,10 +85,11 @@ export default function Checkout() {
           body: JSON.stringify({
             orderDetails: {
               phone: formData.phone,
-              address: `${formData.address}${hasMoved ? `\n📍 Yandex Xarita: https://yandex.ru/maps/?ll=${coords[1]},${coords[0]}&z=16` : ''}`,
+              addressText: formData.address,
+              mapLink: hasMoved ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
               comments: formData.comments,
               total: totalAmount,
-              items: cart.map(i => `${i.name} (${i.quantity} dona)`).join(', ')
+              items: cart.map(i => `▪️ ${i.name} — ${i.quantity} ta`).join('\n')
             },
             userDetails: {
               firstName: formData.firstName,
@@ -148,10 +149,13 @@ export default function Checkout() {
               e.preventDefault();
               if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
-                  const link = `https://yandex.com/maps/?pt=${pos.coords.longitude},${pos.coords.latitude}&z=17&l=map`;
-                  setFormData(prev => ({ ...prev, address: prev.address ? prev.address + '\n📍 ' + link : '📍 ' + link }));
+                  setCoords([pos.coords.latitude, pos.coords.longitude]);
+                  setHasMoved(true);
+                  if ((window as any).flyToLocation) {
+                    (window as any).flyToLocation(pos.coords.latitude, pos.coords.longitude);
+                  }
                   if ((window as any).Telegram?.WebApp?.showAlert) {
-                    (window as any).Telegram.WebApp.showAlert("Lokatsiya manzilga qo'shildi!");
+                    (window as any).Telegram.WebApp.showAlert("Lokatsiya aniqlandi va xaritaga belgilandi!");
                   }
                 }, () => {
                   if ((window as any).Telegram?.WebApp?.showAlert) {
