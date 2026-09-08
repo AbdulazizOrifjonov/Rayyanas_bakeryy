@@ -31,14 +31,37 @@ function ScrollToTop() {
 
 function TelegramStartAppHandler() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   useEffect(() => {
-    const startParam = WebApp.initDataUnsafe?.start_param;
-    if (startParam && startParam.length > 10) { 
-      // Product IDs are UUIDs, so length is around 36
-      navigate(`/product/${startParam}`);
-    }
-  }, [navigate]);
+    const checkStartParam = () => {
+      const startParam = WebApp.initDataUnsafe?.start_param;
+      if (startParam && startParam.length > 10) { 
+        // Only navigate if we are not already on this product page
+        const targetPath = `/product/${startParam}`;
+        if (location.pathname !== targetPath) {
+          navigate(targetPath);
+        }
+      }
+    };
+
+    // Check on mount
+    checkStartParam();
+
+    // Check when hash changes (Telegram might update initData in hash)
+    window.addEventListener('hashchange', checkStartParam);
+    
+    // Check when window gets focus (Telegram Desktop might just focus the window without reload)
+    window.addEventListener('focus', checkStartParam);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkStartParam();
+    });
+
+    return () => {
+      window.removeEventListener('hashchange', checkStartParam);
+      window.removeEventListener('focus', checkStartParam);
+    };
+  }, [navigate, location.pathname]);
 
   return null;
 }

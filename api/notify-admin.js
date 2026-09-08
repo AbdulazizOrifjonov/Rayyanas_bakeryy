@@ -78,7 +78,7 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
                   inline_keyboard: [[
                     {
                       text: `Ochish (Mini App)`,
-                      web_app: { url: `https://rayyanas-bakeryy.vercel.app/product/${item.id}` }
+                      url: `https://t.me/RayyanasBakery_bot/app?startapp=${item.id}`
                     }
                   ]]
                 }
