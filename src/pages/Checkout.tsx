@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
@@ -91,7 +91,7 @@ export default function Checkout() {
               mapLink: hasMoved && !formData.address.includes('yandex') ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
               comments: formData.comments,
               total: totalAmount,
-              items: cart.map(i => `▪️ ${i.name} — ${i.quantity} ta\n🔗 https://rayyanas-bakeryy.vercel.app/product/${i.id}`).join('\n\n')
+              items: cart.map(i => ({ name: i.name, quantity: i.quantity, id: i.id, image_url: i.image_url }))
             },
             userDetails: {
               firstName: formData.firstName,

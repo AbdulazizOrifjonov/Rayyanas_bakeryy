@@ -18,6 +18,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Missing environment variables' });
     }
 
+    const itemsHtml = Array.isArray(orderDetails.items) 
+      ? orderDetails.items.map(item => {
+          if (typeof item === 'string') return `▪️ ${item}`;
+          return `▪️ <a href="https://rayyanas-bakeryy.vercel.app/product/${item.id}">${item.name}</a> — ${item.quantity} ta`;
+        }).join('\n')
+      : orderDetails.items;
+
     const message = `
 🆕 <b>YANGI BUYURTMA</b>
 
@@ -25,13 +32,13 @@ export default async function handler(req, res) {
 📞 <b>Telefon:</b> ${orderDetails.phone}
 
 🛒 <b>Mahsulotlar:</b>
-${orderDetails.items}
+${itemsHtml}
 
 💬 <b>Izoh:</b> ${orderDetails.comments || 'yo\'q'}
 
 💰 <b>Umumiy summa:</b> ${orderDetails.total.toLocaleString('uz-UZ')} so'm
 
-📍 <b>Manzil (matn):</b>
+📍 <b>Manzil:</b>
 ${orderDetails.addressText}
 ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetails.mapLink}">${orderDetails.mapLink}</a>` : ''}
     `.trim();
@@ -52,6 +59,28 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
     
     if (!data.ok) {
       throw new Error(data.description);
+    }
+
+    // Now send the product photos
+    if (Array.isArray(orderDetails.items)) {
+      for (const item of orderDetails.items) {
+        if (item.image_url) {
+          try {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: adminId,
+                photo: item.image_url,
+                caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
+                parse_mode: 'HTML'
+              })
+            });
+          } catch (e) {
+            console.error('Failed to send photo for', item.name, e);
+          }
+        }
+      }
     }
 
     return res.status(200).json({ success: true });
