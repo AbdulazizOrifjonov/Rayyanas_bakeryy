@@ -91,7 +91,7 @@ export default function Checkout() {
               mapLink: hasMoved && !formData.address.includes('yandex') ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
               comments: formData.comments,
               total: totalAmount,
-              items: cart.map(i => `▪️ <a href="https://rayyanas-bakeryy.vercel.app/product/${i.id}">${i.name}</a> — ${i.quantity} ta`).join('\n')
+              items: cart.map(i => `▪️ ${i.name} — ${i.quantity} ta\n🔗 https://rayyanas-bakeryy.vercel.app/product/${i.id}`).join('\n\n')
             },
             userDetails: {
               firstName: formData.firstName,
