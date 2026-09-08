@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const itemsHtml = Array.isArray(orderDetails.items) 
       ? orderDetails.items.map(item => {
           if (typeof item === 'string') return `▪️ ${item}`;
-          return `▪️ <a href="https://t.me/RayyanasBakery_bot/app?startapp=${item.id}">${item.name}</a> — ${item.quantity} ta`;
+          return `▪️ ${item.name} — ${item.quantity} ta`;
         }).join('\n')
       : orderDetails.items;
 
@@ -73,7 +73,15 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
                 chat_id: adminId,
                 document: item.image_url,
                 caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
-                parse_mode: 'HTML'
+                parse_mode: 'HTML',
+                reply_markup: {
+                  inline_keyboard: [[
+                    {
+                      text: `Ochish (Mini App)`,
+                      web_app: { url: `https://rayyanas-bakeryy.vercel.app/product/${item.id}` }
+                    }
+                  ]]
+                }
               })
             });
           } catch (e) {
