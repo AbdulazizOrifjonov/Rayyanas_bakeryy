@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 const WebApp = (window as any).Telegram.WebApp;
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,6 +25,20 @@ function ScrollToTop() {
       behavior: 'smooth'
     });
   }, [pathname]);
+
+  return null;
+}
+
+function TelegramStartAppHandler() {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const startParam = WebApp.initDataUnsafe?.start_param;
+    if (startParam && startParam.length > 10) { 
+      // Product IDs are UUIDs, so length is around 36
+      navigate(`/product/${startParam}`);
+    }
+  }, [navigate]);
 
   return null;
 }
@@ -62,6 +76,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ScrollToTop />
+        <TelegramStartAppHandler />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

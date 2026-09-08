@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const itemsHtml = Array.isArray(orderDetails.items) 
       ? orderDetails.items.map(item => {
           if (typeof item === 'string') return `▪️ ${item}`;
-          return `▪️ <a href="https://rayyanas-bakeryy.vercel.app/product/${item.id}">${item.name}</a> — ${item.quantity} ta`;
+          return `▪️ <a href="https://t.me/RayyanasBakery_bot/app?startapp=${item.id}">${item.name}</a> — ${item.quantity} ta`;
         }).join('\n')
       : orderDetails.items;
 
@@ -66,12 +66,12 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
       for (const item of orderDetails.items) {
         if (item.image_url) {
           try {
-            await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 chat_id: adminId,
-                photo: item.image_url,
+                document: item.image_url,
                 caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
                 parse_mode: 'HTML'
               })
