@@ -56,7 +56,7 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
           inline_keyboard: [[
             {
               text: `Admin Panelni Ochish`,
-              web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin` }
+              web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin?tab=orders` }
             }
           ]]
         }
@@ -78,7 +78,7 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
               inline_keyboard: [[
                 {
                   text: `Buyurtmalarni ko'rish`,
-                  web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin` }
+                  web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin?tab=orders` }
                 }
               ]]
             };

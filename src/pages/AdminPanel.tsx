@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Plus, Trash2, Edit3, X, Save, Image } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface ProductForm {
   name: string;
@@ -28,8 +28,8 @@ const resizeImage = (file: File): Promise<string> => {
       img.src = event.target?.result as string;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
+        const MAX_WIDTH = 400;
+        const MAX_HEIGHT = 400;
         let width = img.width;
         let height = img.height;
 
@@ -48,7 +48,7 @@ const resizeImage = (file: File): Promise<string> => {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
       };
     };
   });
@@ -60,7 +60,10 @@ export default function AdminPanel() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProductForm>(emptyForm);
-  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders'>('products');
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'orders' ? 'orders' : 'products';
+  
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders'>(initialTab);
   const [catForm, setCatForm] = useState({ name: '', image_url: '' });
 
   const { data: products, isLoading } = useQuery({
