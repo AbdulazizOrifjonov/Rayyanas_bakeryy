@@ -66,24 +66,46 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
       for (const item of orderDetails.items) {
         if (item.image_url) {
           try {
-            await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                chat_id: adminId,
-                document: item.image_url,
-                caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
-                parse_mode: 'HTML',
-                reply_markup: {
-                  inline_keyboard: [[
-                    {
-                      text: `Ochish (Mini App)`,
-                      url: `https://t.me/RayyanasBakery_bot/app?startapp=${item.id}`
-                    }
-                  ]]
+            const replyMarkup = {
+              inline_keyboard: [[
+                {
+                  text: `Ochish (Mini App)`,
+                  url: `https://t.me/RayyanasBakery_bot/app?startapp=${item.id}`
                 }
-              })
-            });
+              ]]
+            };
+
+            if (item.image_url.startsWith('data:image')) {
+              const [header, base64Data] = item.image_url.split(',');
+              const mimeMatch = header.match(/:(.*?);/);
+              const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+              const buffer = Buffer.from(base64Data, 'base64');
+              const blob = new Blob([buffer], { type: mime });
+
+              const fd = new FormData();
+              fd.append('chat_id', adminId);
+              fd.append('document', blob, 'product.jpg');
+              fd.append('caption', `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`);
+              fd.append('parse_mode', 'HTML');
+              fd.append('reply_markup', JSON.stringify(replyMarkup));
+
+              await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+                method: 'POST',
+                body: fd
+              });
+            } else {
+              await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  chat_id: adminId,
+                  document: item.image_url,
+                  caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
+                  parse_mode: 'HTML',
+                  reply_markup: replyMarkup
+                })
+              });
+            }
           } catch (e) {
             console.error('Failed to send photo for', item.name, e);
           }
