@@ -173,17 +173,7 @@ export default function Checkout() {
             <LocateFixed size={18} />
             Hozirgi joylashuvimni aniqlash
           </button>
-
-          <textarea 
-            required 
-            name="address" 
-            value={formData.address} 
-            onChange={handleChange} 
-            className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px] mb-3" 
-            placeholder="Xaritadan belgilang yoki manzilni yozing..." 
-          />
         </div>
-
         <div>
           <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('comments', lang)}</label>
           <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
