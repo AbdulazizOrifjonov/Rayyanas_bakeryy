@@ -10,9 +10,10 @@ export default function Profile() {
   const { user, isAdmin } = useStore();
 
   const { data: orders } = useQuery({
-    queryKey: ['orders'],
+    queryKey: ['orders', user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      if (!user?.id) return [];
+      const { data } = await supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
       return data || [];
     }
   });

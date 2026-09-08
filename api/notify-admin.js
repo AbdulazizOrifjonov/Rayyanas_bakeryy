@@ -52,6 +52,14 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
         chat_id: adminId,
         text: message,
         parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [[
+            {
+              text: `Admin Panelni Ochish`,
+              web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin` }
+            }
+          ]]
+        }
       }),
     });
 
@@ -69,8 +77,8 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
             const replyMarkup = {
               inline_keyboard: [[
                 {
-                  text: `Ochish (Mini App)`,
-                  url: `https://t.me/RayyanasBakery_bot/app?startapp=${item.id}`
+                  text: `Buyurtmalarni ko'rish`,
+                  web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin` }
                 }
               ]]
             };
