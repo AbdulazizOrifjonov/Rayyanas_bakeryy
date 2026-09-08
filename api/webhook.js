@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       
       const message = "Xush kelibsiz! Rayyanas Bakery onlayn do'koniga kirish uchun quyidagi tugmani bosing:";
       
-      await fetch(https://api.telegram.org/bot + botToken + /sendMessage, {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
