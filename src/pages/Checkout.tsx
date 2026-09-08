@@ -18,6 +18,8 @@ export default function Checkout() {
   const handleMapClick = (newCoords: [number, number]) => {
     setCoords(newCoords);
     setHasMoved(true);
+    const link = `https://yandex.com/maps/?pt=${newCoords[1]},${newCoords[0]}&z=17&l=map`;
+    setFormData(prev => ({ ...prev, address: prev.address && !prev.address.includes('yandex') ? prev.address + '\n' + link : link }));
   };
 
   const [formData, setFormData] = useState({
@@ -86,10 +88,10 @@ export default function Checkout() {
             orderDetails: {
               phone: formData.phone,
               addressText: formData.address,
-              mapLink: hasMoved ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
+              mapLink: hasMoved && !formData.address.includes('yandex') ? `https://yandex.com/maps/?pt=${coords[1]},${coords[0]}&z=17&l=map` : null,
               comments: formData.comments,
               total: totalAmount,
-              items: cart.map(i => `▪️ ${i.name} — ${i.quantity} ta`).join('\n')
+              items: cart.map(i => `▪️ <a href="https://rayyanas-bakeryy.vercel.app/product/${i.id}">${i.name}</a> — ${i.quantity} ta`).join('\n')
             },
             userDetails: {
               firstName: formData.firstName,
@@ -151,6 +153,8 @@ export default function Checkout() {
                 navigator.geolocation.getCurrentPosition((pos) => {
                   setCoords([pos.coords.latitude, pos.coords.longitude]);
                   setHasMoved(true);
+                  const link = `https://yandex.com/maps/?pt=${pos.coords.longitude},${pos.coords.latitude}&z=17&l=map`;
+                  setFormData(prev => ({ ...prev, address: prev.address && !prev.address.includes('yandex') ? prev.address + '\n' + link : link }));
                   if ((window as any).flyToLocation) {
                     (window as any).flyToLocation(pos.coords.latitude, pos.coords.longitude);
                   }
@@ -176,9 +180,8 @@ export default function Checkout() {
             value={formData.address} 
             onChange={handleChange} 
             className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px] mb-3" 
-            placeholder="Shahar, tuman, ko'cha, uy..." 
+            placeholder="Xaritadan belgilang yoki manzilni yozing..." 
           />
-
         </div>
 
         <div>
