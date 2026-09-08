@@ -82,7 +82,7 @@ export default function AdminPanel() {
   const { data: orders, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number, telegram_id), order_items(*, products(name))').order('created_at', { ascending: false });
+      const { data } = await supabase.from('orders').select('*, users(first_name, last_name, username, phone_number, telegram_id), order_items(*, products(name, image_url))').order('created_at', { ascending: false });
       return data || [];
     }
   });
@@ -434,12 +434,21 @@ export default function AdminPanel() {
                   </div>
                   
                   {order.order_items && order.order_items.length > 0 && (
-                    <div className="bg-amber-50/50 p-2.5 rounded-xl text-xs space-y-1 border border-amber-100 mt-1">
-                      <p className="font-bold text-amber-900 mb-1.5 border-b border-amber-200/50 pb-1.5">Sotib olinganlar:</p>
+                    <div className="bg-amber-50/50 p-2.5 rounded-xl text-xs space-y-2 border border-amber-100 mt-1">
+                      <p className="font-bold text-amber-900 mb-1 border-b border-amber-200/50 pb-1.5">Sotib olinganlar:</p>
                       {order.order_items.map((item: any, idx: number) => (
-                        <div key={idx} className="flex justify-between items-center text-amber-800">
-                          <span>▪️ {item.products?.name || 'Noma\'lum'}</span>
-                          <span className="font-bold bg-amber-100 px-1.5 py-0.5 rounded-md">{item.quantity} ta</span>
+                        <div key={idx} className="flex justify-between items-center bg-white p-2 rounded-lg border border-amber-100/50 shadow-sm text-amber-900">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-md overflow-hidden bg-muted shrink-0 border border-border/50">
+                              {item.products?.image_url ? (
+                                <img src={item.products.image_url} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="w-full h-full flex items-center justify-center text-lg">🎂</span>
+                              )}
+                            </div>
+                            <span className="font-semibold text-xs leading-tight">{item.products?.name || 'Noma\'lum'}</span>
+                          </div>
+                          <span className="font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md text-[10px] shrink-0 whitespace-nowrap">{item.quantity} ta</span>
                         </div>
                       ))}
                     </div>
