@@ -75,7 +75,7 @@ export default function Footer() {
               <div className="bg-slate-700 p-2.5 rounded-lg shadow-inner"><Code size={20} className="text-amber-400" /></div>
               <div className="flex flex-col text-left">
                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Shunday ilova kerakmi?</span>
-                <span className="text-sm font-semibold text-white tracking-wide">Dasturchi bilan aloqa</span>
+                <span className="text-sm font-semibold text-white tracking-wide">@AbdulazizbekITMentor</span>
               </div>
             </div>
           </a>
