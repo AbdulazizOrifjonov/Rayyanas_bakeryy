@@ -99,12 +99,12 @@ export default function AdminPanel() {
       }
       
       if (telegramId && status !== 'new') {
-        const statuses: Record<string, string> = {
-          'accepted': 'Qabul qilindi ✅',
-          'preparing': 'Tayyorlanmoqda 👨‍🍳',
-          'delivering': 'Yetkazilmoqda 🚚',
-          'completed': 'Yetkazib berildi 🎉',
-          'cancelled': 'Bekor qilindi ❌'
+        const messages: Record<string, string> = {
+          'accepted': '✅ <b>Buyurtmangiz qabul qilindi!</b>\n\nTez orada tayyorlashni boshlaymiz. Bizni tanlaganingiz uchun rahmat! 😊',
+          'preparing': '👨‍🍳 <b>Buyurtmangiz tayyorlanmoqda!</b>\n\nEng shirin mahsulotlar aynan siz uchun mehr bilan tayyorlanyapti! 🧁',
+          'delivering': '🚚 <b>Buyurtmangiz yo\'lga chiqdi!</b>\n\nKuryerimiz siz tomonga harakatlanmoqda. Iltimos, telefoningizni aloqada saqlang! 📱',
+          'completed': '🎉 <b>Buyurtmangiz yetkazib berildi!</b>\n\nYoqimli ishtaha! Yana buyurtma berishingizni kutib qolamiz! ❤️',
+          'cancelled': '❌ <b>Buyurtmangiz bekor qilindi.</b>\n\nKeltirilgan noqulayliklar uchun uzr so\'raymiz. Savollaringiz bo\'lsa admin bilan bog\'lanishingiz mumkin.'
         };
         try {
           await fetch(`https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendMessage`, {
@@ -112,7 +112,7 @@ export default function AdminPanel() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: telegramId,
-              text: `Sizning buyurtmangiz holati o'zgardi:\n\nHolat: <b>${statuses[status]}</b>`,
+              text: `🔔 <b>Hurmatli mijoz!</b>\n\n${messages[status]}`,
               parse_mode: 'HTML'
             })
           });
