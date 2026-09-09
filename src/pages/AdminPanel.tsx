@@ -184,6 +184,9 @@ export default function AdminPanel() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // First delete related order_items to avoid foreign key violation
+      await supabase.from('order_items').delete().eq('product_id', id);
+      
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) {
         console.error('Delete product error:', error);

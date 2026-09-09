@@ -5,13 +5,17 @@ export default function Footer() {
       <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl -translate-y-10 translate-x-10"></div>
       
       <div className="relative z-10 flex flex-col items-center">
-        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 mb-3 shadow-lg">
-          <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-full h-full object-cover" />
+        <div className="flex flex-row items-center justify-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 w-full mb-6">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 shadow-lg shrink-0">
+            <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-full h-full object-cover" />
+          </div>
+          <div className="flex flex-col justify-center">
+            <h3 className="text-xl font-extrabold mb-0.5 text-white tracking-tight">Rayyanas Bakery</h3>
+            <a href="https://t.me/Rayyanas_bakeryy" target="_blank" rel="noreferrer" className="text-amber-400 text-sm font-bold flex items-center gap-1.5 active:text-amber-300">
+              <Send size={14} className="transform -rotate-45" /> @Rayyanas_bakeryy
+            </a>
+          </div>
         </div>
-        <h3 className="text-xl font-bold mb-1">Rayyanas Bakery</h3>
-        <a href="https://t.me/Rayyanas_bakeryy" target="_blank" rel="noreferrer" className="text-amber-400 text-sm flex items-center gap-1.5 mb-6 active:text-amber-300">
-          <Send size={14} /> @Rayyanas_bakeryy
-        </a>
         
         <div className="h-px w-full bg-white/10 mb-6"></div>
         
