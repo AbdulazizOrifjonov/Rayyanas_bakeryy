@@ -41,12 +41,6 @@ function MapEffect({ center }: any) {
 export default function LeafletMap({ center, zoom = 13, onLocationSelect, markerCoords }: any) {
   const [position, setPosition] = useState<[number, number] | null>(markerCoords);
 
-  useEffect(() => {
-    if (markerCoords) {
-      setPosition(markerCoords);
-    }
-  }, [markerCoords]);
-
   return (
     <MapContainer 
       center={center} 

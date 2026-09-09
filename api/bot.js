@@ -6,7 +6,7 @@ export default async function handler(req, res) {
       const botToken = process.env.VITE_BOT_TOKEN;
       const webAppUrl = 'https://rayyanas-bakeryy.vercel.app';
       
-      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

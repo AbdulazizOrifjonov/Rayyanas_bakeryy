@@ -4,7 +4,7 @@ export const parseImages = (urlStr: string | null | undefined): string[] => {
     try {
       const arr = JSON.parse(urlStr);
       if (Array.isArray(arr) && arr.length > 0) return arr;
-    } catch(e) {}
+    } catch {}
   }
   return [urlStr];
 };

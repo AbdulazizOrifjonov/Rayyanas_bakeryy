@@ -114,7 +114,8 @@ const YandexMap = forwardRef<YandexMapRef, YandexMapProps>(({
         markerRef.current = null;
       }
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center, zoom, markerCoords, onMapClick, onLocationSelect]);
 
   useEffect(() => {
     if (mapInstance && markerCoords) {
@@ -137,13 +138,13 @@ const YandexMap = forwardRef<YandexMapRef, YandexMapProps>(({
       markerRef.current = marker;
       mapInstance.setCenter(markerCoords, zoom, { duration: 300 });
     }
-  }, [markerCoords, zoom]);
+  }, [mapInstance, markerCoords, zoom, onMapClick, onLocationSelect]);
 
   useEffect(() => {
     if (mapInstance) {
       mapInstance.setCenter(center, zoom, { duration: 300 });
     }
-  }, [center, zoom]);
+  }, [mapInstance, center, zoom]);
 
 return (
     <div

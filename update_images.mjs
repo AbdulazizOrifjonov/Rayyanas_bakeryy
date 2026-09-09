@@ -14,7 +14,7 @@ async function run() {
   for (const p of products) {
     let imgs = [];
     if (p.image_url && p.image_url.startsWith('[')) {
-       try { imgs = JSON.parse(p.image_url); } catch(e) {}
+       try { imgs = JSON.parse(p.image_url); } catch {}
     } else if (p.image_url) {
        imgs = [p.image_url];
     }
