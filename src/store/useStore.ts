@@ -97,6 +97,7 @@ export const useStore = create<AppState>()(
       user: null,
       isAdmin: false,
       setUser: async (user) => {
+        console.log('[useStore] setUser called:', user);
         set({ user });
         if (user) {
           await get().loadCartFromDB();
@@ -187,13 +188,29 @@ export const useStore = create<AppState>()(
         if (!user) return;
         
         try {
-          const { data: dbUser } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
-          if (!dbUser) return;
+          console.log('[useStore] Loading cart from DB for user:', user.id);
+          const { data: dbUser, error: userError } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
+          if (userError) {
+            console.error('[useStore] User lookup error:', userError);
+            return;
+          }
+          if (!dbUser) {
+            console.log('[useStore] No user found in DB for telegram_id:', user.id);
+            return;
+          }
+          console.log('[useStore] Found user in DB:', dbUser.id);
           
-          const { data: cartItems } = await supabase
+          const { data: cartItems, error: cartError } = await supabase
             .from('cart_items')
             .select('product_id, quantity, products(*)')
             .eq('user_id', dbUser.id);
+          
+          if (cartError) {
+            console.error('[useStore] Cart items query error:', cartError);
+            return;
+          }
+          
+          console.log('[useStore] Cart items from DB:', cartItems);
           
           if (cartItems && cartItems.length > 0) {
             const newCart: CartItem[] = cartItems.map(item => {
@@ -205,6 +222,7 @@ export const useStore = create<AppState>()(
             });
             set({ cart: newCart });
             saveLocalCart(newCart);
+            console.log('[useStore] Cart loaded and set:', newCart);
           }
         } catch (e) {
           console.error('Load cart from DB failed:', e);
@@ -216,11 +234,23 @@ export const useStore = create<AppState>()(
         if (!user) return;
         
         try {
-          const { data: dbUser } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
-          if (!dbUser) return;
+          console.log('[useStore] Syncing cart to DB for user:', user.id, 'cart:', cart);
+          const { data: dbUser, error: userError } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
+          if (userError) {
+            console.error('[useStore] User lookup error:', userError);
+            return;
+          }
+          if (!dbUser) {
+            console.log('[useStore] No user found in DB for telegram_id:', user.id);
+            return;
+          }
+          console.log('[useStore] Found user in DB:', dbUser.id);
           
           // Delete all existing cart items for this user
-          await supabase.from('cart_items').delete().eq('user_id', dbUser.id);
+          const { error: deleteError } = await supabase.from('cart_items').delete().eq('user_id', dbUser.id);
+          if (deleteError) {
+            console.error('[useStore] Delete cart items error:', deleteError);
+          }
           
           // Insert current cart items
           if (cart.length > 0) {
@@ -230,7 +260,12 @@ export const useStore = create<AppState>()(
               quantity: item.quantity
             }));
             
-            await supabase.from('cart_items').insert(cartItems);
+            const { error: insertError } = await supabase.from('cart_items').insert(cartItems);
+            if (insertError) {
+              console.error('[useStore] Insert cart items error:', insertError);
+            } else {
+              console.log('[useStore] Cart synced to DB successfully');
+            }
           }
         } catch (e) {
           console.error('Sync cart to DB failed:', e);
@@ -266,13 +301,29 @@ export const useStore = create<AppState>()(
         if (!user) return;
         
         try {
-          const { data: dbUser } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
-          if (!dbUser) return;
+          console.log('[useStore] Loading favorites from DB for user:', user.id);
+          const { data: dbUser, error: userError } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
+          if (userError) {
+            console.error('[useStore] User lookup error:', userError);
+            return;
+          }
+          if (!dbUser) {
+            console.log('[useStore] No user found in DB for telegram_id:', user.id);
+            return;
+          }
+          console.log('[useStore] Found user in DB:', dbUser.id);
           
-          const { data: favItems } = await supabase
+          const { data: favItems, error: favError } = await supabase
             .from('favorites')
             .select('product_id, products(*)')
             .eq('user_id', dbUser.id);
+          
+          if (favError) {
+            console.error('[useStore] Favorites query error:', favError);
+            return;
+          }
+          
+          console.log('[useStore] Favorites from DB:', favItems);
           
           if (favItems && favItems.length > 0) {
             const newFavorites: Product[] = favItems.map(item => {
@@ -281,6 +332,7 @@ export const useStore = create<AppState>()(
             });
             set({ favorites: newFavorites });
             saveLocalFavorites(newFavorites);
+            console.log('[useStore] Favorites loaded and set:', newFavorites);
           }
         } catch (e) {
           console.error('Load favorites from DB failed:', e);
@@ -292,11 +344,23 @@ export const useStore = create<AppState>()(
         if (!user) return;
         
         try {
-          const { data: dbUser } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
-          if (!dbUser) return;
+          console.log('[useStore] Syncing favorites to DB for user:', user.id, 'favorites:', favorites);
+          const { data: dbUser, error: userError } = await supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single();
+          if (userError) {
+            console.error('[useStore] User lookup error:', userError);
+            return;
+          }
+          if (!dbUser) {
+            console.log('[useStore] No user found in DB for telegram_id:', user.id);
+            return;
+          }
+          console.log('[useStore] Found user in DB:', dbUser.id);
           
           // Delete all existing favorites for this user
-          await supabase.from('favorites').delete().eq('user_id', dbUser.id);
+          const { error: deleteError } = await supabase.from('favorites').delete().eq('user_id', dbUser.id);
+          if (deleteError) {
+            console.error('[useStore] Delete favorites error:', deleteError);
+          }
           
           // Insert current favorites
           if (favorites.length > 0) {
@@ -305,7 +369,12 @@ export const useStore = create<AppState>()(
               product_id: item.id
             }));
             
-            await supabase.from('favorites').insert(favItems);
+            const { error: insertError } = await supabase.from('favorites').insert(favItems);
+            if (insertError) {
+              console.error('[useStore] Insert favorites error:', insertError);
+            } else {
+              console.log('[useStore] Favorites synced to DB successfully');
+            }
           }
         } catch (e) {
           console.error('Sync favorites to DB failed:', e);
