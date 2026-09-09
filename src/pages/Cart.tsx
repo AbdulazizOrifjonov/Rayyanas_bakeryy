@@ -1,6 +1,5 @@
 import { useStore } from '../store/useStore';
 import { Heart, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
-import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { t } from '../lib/i18n';
 import { parseImages } from '../utils/imageParser';
@@ -108,11 +107,6 @@ export default function Cart() {
             {t('checkout', lang)}
           </button>
         </div>
-      </div>
-      
-      {/* Footer */}
-      <div className="pb-[130px]">
-        <Footer />
       </div>
     </div>
   );
