@@ -79,7 +79,7 @@ function App() {
     if (WebApp.initDataUnsafe?.user) {
       setUser(WebApp.initDataUnsafe.user as any);
       
-      const adminIds = ['1594150529'];
+      const adminIds = ['1594150529', '332221882'];
       const adminUsernames = ['Rayyanas_bakeryy', 'AbdulazizbekITMentor'];
       
       const userId = WebApp.initDataUnsafe.user.id?.toString();
