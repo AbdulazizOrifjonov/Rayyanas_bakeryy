@@ -68,6 +68,16 @@ export default function Footer() {
             </div>
           </a>
         </div>
+        
+        {/* Developer Credit */}
+        <div className="mt-10 mb-2 flex flex-col items-center justify-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
+          <a href="https://t.me/AbdulazizbekITMentor" target="_blank" rel="noreferrer" className="flex flex-col items-center text-center">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300 font-medium">
+              <span className="font-mono text-amber-500 font-bold">&lt;/&gt;</span> Shunday ilova kerakmi?
+            </div>
+            <span className="text-[10px] font-bold text-amber-400 mt-0.5">Dasturchi: @AbdulazizbekITMentor</span>
+          </a>
+        </div>
       </div>
     </footer>
   );
