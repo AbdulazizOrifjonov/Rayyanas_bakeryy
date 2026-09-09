@@ -39,6 +39,15 @@ export default function Checkout() {
     e.preventDefault();
     if (cart.length === 0) return;
 
+    if (!hasMoved) {
+      if (WebApp?.showAlert) {
+        WebApp.showAlert("Iltimos, yetkazib berish uchun xaritadan manzilingizni belgilang!");
+      } else {
+        alert("Iltimos, yetkazib berish uchun xaritadan manzilingizni belgilang!");
+      }
+      return;
+    }
+
     setLoading(true);
     try {
       // Check if user exists in our DB, if not create
@@ -175,6 +184,23 @@ export default function Checkout() {
             Hozirgi joylashuvimni aniqlash
           </button>
         </div>
+
+        {/* MAP SECTION MOVED ABOVE COMMENTS */}
+        <div className="border-t border-border/50 pt-2 pb-2">
+          <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
+            <span>Xaritadan tanlang <span className="text-red-500">*</span></span>
+          </label>
+          <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
+            <LeafletMap
+              center={coords}
+              zoom={13}
+              onLocationSelect={handleMapClick}
+              markerCoords={hasMoved ? coords : null}
+            />
+          </div>
+          <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
+        </div>
+
         <div>
           <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('comments', lang)}</label>
           <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
@@ -187,22 +213,6 @@ export default function Checkout() {
         >
           {loading ? t('submitting', lang) : t('submit', lang)}
         </button>
-
-        {/* MAP SECTION AT THE VERY BOTTOM */}
-        <div className="mt-4 border-t border-border/50 pt-4">
-          <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
-<span>{t('map_label', lang)}</span>
-        </label>
-        <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-          <LeafletMap
-            center={coords}
-            zoom={13}
-            onLocationSelect={handleMapClick}
-            markerCoords={hasMoved ? coords : null}
-          />
-        </div>
-        <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
-        </div>
       </form>
     </div>
   );
