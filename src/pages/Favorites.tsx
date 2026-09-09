@@ -1,6 +1,7 @@
 import { useStore } from '../store/useStore';
 import ProductCard from '../components/ProductCard';
 import { Heart } from 'lucide-react';
+import Footer from '../components/Footer';
 
 export default function Favorites() {
   const { favorites } = useStore();
@@ -26,6 +27,8 @@ export default function Favorites() {
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 }
