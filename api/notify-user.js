@@ -1,4 +1,4 @@
-﻿export default async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
@@ -18,7 +18,7 @@
     const message = messages[status];
     if (!message) return res.status(400).json({ error: 'Invalid status' });
 
-    const botToken = process.env.VITE_BOT_TOKEN;
+    const botToken = process.env.VITE_BOT_TOKEN || '8849500819:AAH74freLw2W5Nnpf9q9h1swajxncs5QZIs';
     if (!botToken) return res.status(500).json({ error: 'Bot token missing on server' });
 
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     if (update.message && update.message.text) {
       const text = update.message.text;
       const chatId = update.message.chat.id;
-      const botToken = process.env.VITE_BOT_TOKEN;
+      const botToken = process.env.VITE_BOT_TOKEN || '8849500819:AAH74freLw2W5Nnpf9q9h1swajxncs5QZIs';
 
       if (text.startsWith('/start')) {
         let message = "Xush kelibsiz! Rayyanas Bakery onlayn do'koniga kirish uchun quyidagi tugmani bosing:";
