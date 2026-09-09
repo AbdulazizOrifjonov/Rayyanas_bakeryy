@@ -41,12 +41,14 @@ interface AppState {
   cartTotal: () => number;
   loadCartFromDB: () => Promise<void>;
   syncCartToDB: () => Promise<void>;
+  subscribeToCartChanges: () => void;
 
   favorites: Product[];
   toggleFavorite: (product: Product) => void;
   isFavorite: (productId: string) => boolean;
   loadFavoritesFromDB: () => Promise<void>;
   syncFavoritesToDB: () => Promise<void>;
+  subscribeToFavoritesChanges: () => void;
 }
 
 const STORAGE_KEY = 'rayyanas-bakery-storage';
@@ -102,6 +104,8 @@ export const useStore = create<AppState>()(
         if (user) {
           await get().loadCartFromDB();
           await get().loadFavoritesFromDB();
+          get().subscribeToCartChanges();
+          get().subscribeToFavoritesChanges();
         } else {
           set({ cart: [], favorites: [] });
         }
@@ -271,6 +275,41 @@ export const useStore = create<AppState>()(
           console.error('Sync cart to DB failed:', e);
         }
       },
+      
+      subscribeToCartChanges: () => {
+        const { user } = get();
+        if (!user) return;
+        
+        supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single()
+          .then(({ data: dbUser, error }) => {
+            if (error || !dbUser) {
+              console.log('[useStore] No user for cart subscription');
+              return;
+            }
+            
+            console.log('[useStore] Subscribing to cart changes for user:', dbUser.id);
+            
+            const channel = supabase
+              .channel(`cart_changes_${dbUser.id}`)
+              .on(
+                'postgres_changes',
+                {
+                  event: '*',
+                  schema: 'public',
+                  table: 'cart_items',
+                  filter: `user_id=eq.${dbUser.id}`
+                },
+                (payload) => {
+                  console.log('[useStore] Cart change received:', payload);
+                  get().loadCartFromDB();
+                }
+              )
+              .subscribe();
+            
+            // Store channel for cleanup (optional)
+            (window as any).__cartChannel = channel;
+          });
+      },
 
       favorites: getLocalFavorites(),
       toggleFavorite: async (product) => {
@@ -379,6 +418,41 @@ export const useStore = create<AppState>()(
         } catch (e) {
           console.error('Sync favorites to DB failed:', e);
         }
+      },
+      
+      subscribeToFavoritesChanges: () => {
+        const { user } = get();
+        if (!user) return;
+        
+        supabase.from('users').select('id').eq('telegram_id', user.id.toString()).single()
+          .then(({ data: dbUser, error }) => {
+            if (error || !dbUser) {
+              console.log('[useStore] No user for favorites subscription');
+              return;
+            }
+            
+            console.log('[useStore] Subscribing to favorites changes for user:', dbUser.id);
+            
+            const channel = supabase
+              .channel(`favorites_changes_${dbUser.id}`)
+              .on(
+                'postgres_changes',
+                {
+                  event: '*',
+                  schema: 'public',
+                  table: 'favorites',
+                  filter: `user_id=eq.${dbUser.id}`
+                },
+                (payload) => {
+                  console.log('[useStore] Favorites change received:', payload);
+                  get().loadFavoritesFromDB();
+                }
+              )
+              .subscribe();
+            
+            // Store channel for cleanup (optional)
+            (window as any).__favoritesChannel = channel;
+          });
       },
     }),
     {
