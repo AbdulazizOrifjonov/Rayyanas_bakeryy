@@ -95,22 +95,38 @@ export default function AdminPanel() {
       const { error } = await supabase.from('orders').update({ status }).eq('id', id);
       if (error) throw error;
       
-      // Notify user
       if (telegramId && status !== 'new') {
+        const statuses: Record<string, string> = {
+          'accepted': 'Qabul qilindi ✅',
+          'preparing': 'Tayyorlanmoqda 👨‍🍳',
+          'delivering': 'Yetkazilmoqda 🚚',
+          'completed': 'Yetkazib berildi 🎉',
+          'cancelled': 'Bekor qilindi ❌'
+        };
         try {
-          await fetch('/api/notify-user', {
+          await fetch(`https://api.telegram.org/bot${import.meta.env.VITE_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ telegramId, status, orderId: id })
+            body: JSON.stringify({
+              chat_id: telegramId,
+              text: `Sizning buyurtmangiz holati o'zgardi:\n\nHolat: <b>${statuses[status]}</b>`,
+              parse_mode: 'HTML'
+            })
           });
-        } catch(e) {
-          console.error("Failed to notify user", e);
+        } catch (e) {
+          console.error('Failed to notify user', e);
         }
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-    }
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('orders').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
   });
 
   const saveMutation = useMutation({
@@ -507,26 +523,36 @@ export default function AdminPanel() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-medium text-muted-foreground">Holati:</span>
-                    <select 
-                      value={order.status}
-                      onChange={(e) => updateOrderStatus.mutate({ id: order.id, status: e.target.value, telegramId: order.users?.telegram_id })}
-                      disabled={updateOrderStatus.isPending}
-                      className={`text-xs font-bold px-2 py-1 rounded-md outline-none ${
-                        order.status === 'new' ? 'bg-amber-100 text-amber-700' :
-                        order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                        order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-muted-foreground">Holati:</span>
+                      <select 
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus.mutate({ id: order.id, status: e.target.value, telegramId: order.users?.telegram_id })}
+                        disabled={updateOrderStatus.isPending}
+                        className={`text-xs font-bold px-2 py-1 rounded-md outline-none ${
+                          order.status === 'new' ? 'bg-amber-100 text-amber-700' :
+                          order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}
+                      >
+                        <option value="new">Yangi</option>
+                        <option value="accepted">Qabul qilindi</option>
+                        <option value="preparing">Tayyorlanmoqda</option>
+                        <option value="delivering">Yetkazilmoqda</option>
+                        <option value="completed">Bajarildi</option>
+                        <option value="cancelled">Bekor qilindi</option>
+                      </select>
+                    </div>
+                    
+                    <button 
+                      onClick={() => { if(confirm("Haqiqatdan ham bu buyurtmani o'chirmoqchimisiz?")) deleteOrderMutation.mutate(order.id); }}
+                      disabled={deleteOrderMutation.isPending}
+                      className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 active:scale-95 transition-all"
                     >
-                      <option value="new">Yangi</option>
-                      <option value="accepted">Qabul qilindi</option>
-                      <option value="preparing">Tayyorlanmoqda</option>
-                      <option value="delivering">Yetkazilmoqda</option>
-                      <option value="completed">Bajarildi</option>
-                      <option value="cancelled">Bekor qilindi</option>
-                    </select>
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
               ))
