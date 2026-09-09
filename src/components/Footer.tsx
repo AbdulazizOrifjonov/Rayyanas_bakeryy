@@ -1,82 +1,106 @@
-import { Send, Phone, MessageCircle, Code } from 'lucide-react';
+import { Send, Phone, MessageCircle, Code, ChevronRight } from 'lucide-react';
 export default function Footer() {
   return (
-    <footer className="mt-4 -mb-20 pb-28 pt-8 px-6 bg-gradient-to-br from-slate-900 to-slate-800 rounded-t-[32px] text-white shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl -translate-y-10 translate-x-10"></div>
+    <footer className="mt-4 -mb-20 pb-28 pt-8 px-5 bg-[#0a0f1d] rounded-t-[32px] text-white relative overflow-hidden">
+      {/* Background glowing orbs */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -translate-y-20 translate-x-10 pointer-events-none"></div>
+      <div className="absolute bottom-40 left-0 w-64 h-64 bg-purple-600/10 rounded-full blur-[80px] translate-y-10 -translate-x-10 pointer-events-none"></div>
       
       <div className="relative z-10 flex flex-col items-center">
-        <div className="flex flex-row items-center justify-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-4 w-full mb-6 backdrop-blur-sm">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-400 shadow-lg shrink-0 bg-white">
-            <img src="/logo.jpg" alt="Rayyanas Bakery" className="w-full h-full object-cover" />
-          </div>
-          <div className="flex flex-col justify-center w-full">
-            <h3 className="text-xl font-extrabold mb-0.5 text-white tracking-tight">Rayyanas Bakery</h3>
-            <span className="text-amber-400 text-[11px] font-bold uppercase tracking-wider">Eng shirin va mazzali</span>
-          </div>
+        {/* Brand Header */}
+        <div className="flex flex-col items-center justify-center mb-8">
+          <h3 className="text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase mb-1">Rayyanas Bakery</h3>
+          <span className="text-xl text-gray-300 font-serif italic opacity-80">Shirin lahzalar siz bilan ♡</span>
         </div>
         
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6"></div>
-        
-        <p className="text-[13px] text-gray-300 mb-4 text-center leading-relaxed font-semibold px-4">
-          Buyurtma berish yoki savollar uchun biz bilan bog'laning:
-        </p>
-        
-        <div className="space-y-3 w-full">
+        <div className="space-y-4 w-full">
           {/* Telegram Channel */}
-          <a href="https://t.me/+Q5YujT1WMfU1M2Uy" target="_blank" rel="noreferrer" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3.5 active:bg-white/10 transition-colors shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-blue-500 p-2.5 rounded-lg shadow-inner"><MessageCircle size={20} className="text-white" /></div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Telegram Kanalimiz</span>
-                <span className="text-sm font-semibold text-white tracking-wide">Bizga a'zo bo'ling</span>
+          <a href="https://t.me/+Q5YujT1WMfU1M2Uy" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-blue-400/30 bg-blue-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(59,130,246,0.15)] group transition-all duration-300 active:scale-95">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                 <Send className="text-white w-6 h-6 transform -translate-x-0.5" />
               </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-blue-200 font-bold tracking-widest uppercase mb-0.5">Telegram Kanalimiz</span>
+                <span className="text-base font-extrabold text-white tracking-wide">Bizga a'zo bo'ling</span>
+              </div>
+            </div>
+            <Send className="absolute right-20 top-1/2 -translate-y-1/2 w-28 h-28 text-blue-500/10 -rotate-12 pointer-events-none" />
+            <div className="relative z-10 w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center backdrop-blur-sm shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <ChevronRight className="w-5 h-5 text-white" />
             </div>
           </a>
 
           {/* Telegram Username */}
-          <a href="https://t.me/Rayyanas_bakeryy" target="_blank" rel="noreferrer" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3.5 active:bg-white/10 transition-colors shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-[#2AABEE] p-2.5 rounded-lg shadow-inner"><Send size={20} className="text-white transform -translate-x-0.5" /></div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Admin bilan aloqa</span>
-                <span className="text-sm font-semibold text-white tracking-wide">@Rayyanas_bakeryy</span>
+          <a href="https://t.me/Rayyanas_bakeryy" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-cyan-400/30 bg-cyan-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.15)] group transition-all duration-300 active:scale-95">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 to-blue-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                 <MessageCircle className="text-white w-6 h-6" />
               </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-cyan-200 font-bold tracking-widest uppercase mb-0.5">Admin bilan aloqa</span>
+                <span className="text-base font-extrabold text-white tracking-wide">@Rayyanas_bakeryy</span>
+              </div>
+            </div>
+            <MessageCircle className="absolute right-20 top-1/2 -translate-y-1/2 w-28 h-28 text-cyan-500/10 -rotate-12 pointer-events-none" />
+            <div className="relative z-10 w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center backdrop-blur-sm shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <ChevronRight className="w-5 h-5 text-white" />
             </div>
           </a>
 
           {/* Instagram */}
-          <a href="https://www.instagram.com/rayyanas_bakeryy?stkn=MXV0Ym1vanNtYjdxMQ%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3.5 active:bg-white/10 transition-colors shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-2.5 rounded-lg shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          <a href="https://www.instagram.com/rayyanas_bakeryy?stkn=MXV0Ym1vanNtYjdxMQ%3D%3D&utm_source=qr" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-pink-500/30 bg-pink-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(236,72,153,0.15)] group transition-all duration-300 active:scale-95">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 shadow-[0_0_15px_rgba(236,72,153,0.5)]">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Instagram sahifamiz</span>
-                <span className="text-sm font-semibold text-white tracking-wide">@rayyanas_bakeryy</span>
+                <span className="text-[10px] text-pink-200 font-bold tracking-widest uppercase mb-0.5">Instagram sahifamiz</span>
+                <span className="text-base font-extrabold text-white tracking-wide">@rayyanas_bakeryy</span>
               </div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute right-16 top-1/2 -translate-y-1/2 text-pink-500/10 -rotate-12 pointer-events-none"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            <div className="relative z-10 w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center backdrop-blur-sm shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <ChevronRight className="w-5 h-5 text-white" />
             </div>
           </a>
           
           {/* Phone */}
-          <a href="tel:+998998427449" className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3.5 active:bg-emerald-500/20 transition-colors shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-emerald-500 p-2.5 rounded-lg shadow-inner"><Phone size={20} className="text-white" /></div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-emerald-400 uppercase font-bold tracking-wider mb-0.5">Qo'ng'iroq qilish</span>
-                <span className="text-sm font-bold text-white tracking-wide">+998 99 842 74 49</span>
+          <a href="tel:+998998427449" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-emerald-400/30 bg-emerald-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)] group transition-all duration-300 active:scale-95">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                 <Phone className="text-white w-6 h-6" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-emerald-200 font-bold tracking-widest uppercase mb-0.5">Qo'ng'iroq qilish</span>
+                <span className="text-base font-extrabold text-white tracking-wide">+998 99 842 74 49</span>
               </div>
             </div>
+            <Phone className="absolute right-20 top-1/2 -translate-y-1/2 w-28 h-28 text-emerald-500/10 -rotate-12 pointer-events-none" />
+            <div className="relative z-10 w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center backdrop-blur-sm shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <ChevronRight className="w-5 h-5 text-white" />
+            </div>
           </a>
-        </div>
-        
+          
           {/* Developer Credit */}
-          <a href="https://t.me/AbdulazizbekITMentor" target="_blank" rel="noreferrer" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3.5 active:bg-white/10 transition-colors shadow-sm mt-4">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-slate-700 p-2.5 rounded-lg shadow-inner"><Code size={20} className="text-amber-400" /></div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Shunday ilova kerakmi?</span>
-                <span className="text-sm font-semibold text-white tracking-wide">@AbdulazizbekITMentor</span>
+          <a href="https://t.me/AbdulazizbekITMentor" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-purple-400/30 bg-purple-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.15)] group transition-all duration-300 active:scale-95">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                 <Code className="text-white w-6 h-6" />
               </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-purple-200 font-bold tracking-widest uppercase mb-0.5">Shunday ilova kerakmi?</span>
+                <span className="text-base font-extrabold text-white tracking-wide">@AbdulazizbekITMentor</span>
+              </div>
+            </div>
+            <Code className="absolute right-20 top-1/2 -translate-y-1/2 w-28 h-28 text-purple-500/10 -rotate-12 pointer-events-none" />
+            <div className="relative z-10 w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center backdrop-blur-sm shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <ChevronRight className="w-5 h-5 text-white" />
             </div>
           </a>
         </div>
