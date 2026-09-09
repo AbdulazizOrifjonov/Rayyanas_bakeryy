@@ -174,12 +174,18 @@ export default function Checkout() {
                   }
                   if ((window as any).Telegram?.WebApp?.showAlert) {
                     (window as any).Telegram.WebApp.showAlert("Lokatsiya aniqlandi va xaritaga belgilandi!");
+                  } else {
+                    alert("Lokatsiya aniqlandi va xaritaga belgilandi!");
                   }
                 }, () => {
                   if ((window as any).Telegram?.WebApp?.showAlert) {
-                    (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) yoqilganiga ishonch hosil qiling.");
+                    (window as any).Telegram.WebApp.showAlert("Lokatsiyani aniqlab bo'lmadi. Telefoningizda GPS (Lokatsiya) ruxsat berilganligiga ishonch hosil qiling.");
+                  } else {
+                    alert("Lokatsiyani aniqlab bo'lmadi. GPS (Lokatsiya) ruxsat berilganligiga ishonch hosil qiling.");
                   }
                 });
+              } else {
+                alert("Sizning qurilmangizda lokatsiyani aniqlash funksiyasi yo'q.");
               }
             }}
             className="w-full mb-3 bg-blue-50 text-blue-600 border border-blue-200 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:bg-blue-100 transition-colors"
