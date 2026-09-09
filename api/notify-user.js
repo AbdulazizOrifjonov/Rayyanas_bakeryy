@@ -21,12 +21,12 @@
     const botToken = process.env.VITE_BOT_TOKEN;
     if (!botToken) return res.status(500).json({ error: 'Bot token missing on server' });
 
-    const response = await fetch(https://api.telegram.org/bot/sendMessage, {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: telegramId,
-        text: 🔔 <b>Hurmatli mijoz!</b>\n\n,
+        text: `🔔 <b>Hurmatli mijoz!</b>\n\n${message}`,
         parse_mode: 'HTML'
       })
     });
