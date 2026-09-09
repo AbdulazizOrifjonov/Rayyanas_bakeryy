@@ -130,6 +130,9 @@ export default function AdminPanel() {
 
   const deleteOrderMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Bypassing FK constraint by deleting order items first
+      await supabase.from('order_items').delete().eq('order_id', id);
+
       const { error } = await supabase.from('orders').delete().eq('id', id);
       if (error) {
         console.error('Delete order error:', error);
@@ -138,8 +141,8 @@ export default function AdminPanel() {
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] }),
     onError: (error: any) => {
-      console.error('Delete order error:', error);
-      alert(`O'chirish xatosi: ${error.message || JSON.stringify(error)}`);
+      console.error('Delete order mutation error:', error);
+      alert(`Buyurtmani o'chirish xatosi: ${error.message || JSON.stringify(error)}`);
     }
   });
 
