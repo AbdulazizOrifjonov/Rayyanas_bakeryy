@@ -36,11 +36,17 @@ function TelegramStartAppHandler() {
   useEffect(() => {
     const checkStartParam = () => {
       const startParam = WebApp.initDataUnsafe?.start_param;
-      if (startParam && startParam.length > 10) { 
-        // Only navigate if we are not already on this product page
-        const targetPath = `/product/${startParam}`;
-        if (location.pathname !== targetPath) {
-          navigate(targetPath);
+      if (startParam) {
+        if (startParam === 'admin') {
+          if (location.pathname !== '/admin') {
+            navigate('/admin?tab=orders');
+          }
+        } else if (startParam.length > 10) { 
+          // Only navigate if we are not already on this product page
+          const targetPath = `/product/${startParam}`;
+          if (location.pathname !== targetPath) {
+            navigate(targetPath);
+          }
         }
       }
     };
