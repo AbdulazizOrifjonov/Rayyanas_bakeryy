@@ -43,30 +43,28 @@ ${orderDetails.addressText}
 ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetails.mapLink}">${orderDetails.mapLink}</a>` : ''}
     `.trim();
 
-    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: adminId,
-        text: message,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [[
-            {
-              text: `Admin Panelni Ochish`,
-              web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin?tab=orders` }
-            }
-          ]]
-        }
-      }),
-    });
-
-    const data = await response.json();
+    const adminIds = process.env.VITE_ADMIN_ID ? process.env.VITE_ADMIN_ID.split(',').map(i => i.trim()) : ['1594150529'];
     
-    if (!data.ok) {
-      throw new Error(data.description);
+    for (const adminId of adminIds) {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: adminId,
+          text: message,
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [[
+              {
+                text: `Admin Panelni Ochish`,
+                web_app: { url: `https://rayyanas-bakeryy.vercel.app/admin?tab=orders` }
+              }
+            ]]
+          }
+        }),
+      });
     }
 
     // Now send the product photos
@@ -90,29 +88,33 @@ ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetai
               const buffer = Buffer.from(base64Data, 'base64');
               const blob = new Blob([buffer], { type: mime });
 
-              const fd = new FormData();
-              fd.append('chat_id', adminId);
-              fd.append('document', blob, 'product.jpg');
-              fd.append('caption', `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`);
-              fd.append('parse_mode', 'HTML');
-              fd.append('reply_markup', JSON.stringify(replyMarkup));
+              for (const aId of adminIds) {
+                const fd = new FormData();
+                fd.append('chat_id', aId);
+                fd.append('document', blob, 'product.jpg');
+                fd.append('caption', `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`);
+                fd.append('parse_mode', 'HTML');
+                fd.append('reply_markup', JSON.stringify(replyMarkup));
 
-              await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
-                method: 'POST',
-                body: fd
-              });
+                await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+                  method: 'POST',
+                  body: fd
+                });
+              }
             } else {
-              await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  chat_id: adminId,
-                  document: item.image_url,
-                  caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
-                  parse_mode: 'HTML',
-                  reply_markup: replyMarkup
-                })
-              });
+              for (const aId of adminIds) {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    chat_id: aId,
+                    document: item.image_url,
+                    caption: `📦 <b>${item.name}</b>\nSoni: ${item.quantity} ta`,
+                    parse_mode: 'HTML',
+                    reply_markup: replyMarkup
+                  })
+                });
+              }
             }
           } catch (e) {
             console.error('Failed to send photo for', item.name, e);
