@@ -93,7 +93,10 @@ export default function AdminPanel() {
   const updateOrderStatus = useMutation({
     mutationFn: async ({ id, status, telegramId }: { id: string, status: string, telegramId?: string }) => {
       const { error } = await supabase.from('orders').update({ status }).eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Update order status error:', error);
+        throw error;
+      }
       
       if (telegramId && status !== 'new') {
         const statuses: Record<string, string> = {
@@ -118,15 +121,26 @@ export default function AdminPanel() {
         }
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] }),
+    onError: (error: any) => {
+      console.error('Update order status error:', error);
+      alert(`Xatolik: ${error.message || JSON.stringify(error)}`);
+    }
   });
 
   const deleteOrderMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('orders').delete().eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Delete order error:', error);
+        throw error;
+      }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-orders'] }),
+    onError: (error: any) => {
+      console.error('Delete order error:', error);
+      alert(`O'chirish xatosi: ${error.message || JSON.stringify(error)}`);
+    }
   });
 
   const saveMutation = useMutation({
@@ -142,10 +156,16 @@ export default function AdminPanel() {
       };
       if (editingId) {
         const { error } = await supabase.from('products').update(payload).eq('id', editingId);
-        if (error) throw error;
+        if (error) {
+          console.error('Update product error:', error);
+          throw error;
+        }
       } else {
         const { error } = await supabase.from('products').insert(payload);
-        if (error) throw error;
+        if (error) {
+          console.error('Insert product error:', error);
+          throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -155,38 +175,63 @@ export default function AdminPanel() {
       setShowForm(false);
       setEditingId(null);
       setForm(emptyForm);
+    },
+    onError: (error: any) => {
+      console.error('Save mutation error:', error);
+      alert(`Xatolik: ${error.message || JSON.stringify(error)}`);
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('products').delete().eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Delete product error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+    onError: (error: any) => {
+      console.error('Delete mutation error:', error);
+      alert(`O'chirish xatosi: ${error.message || JSON.stringify(error)}`);
     }
   });
 
   const saveCatMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('categories').insert({ name: catForm.name, image_url: catForm.image_url || null });
-      if (error) throw error;
+      if (error) {
+        console.error('Insert category error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       setCatForm({ name: '', image_url: '' });
+    },
+    onError: (error: any) => {
+      console.error('Save category error:', error);
+      alert(`Xatolik: ${error.message || JSON.stringify(error)}`);
     }
   });
 
   const deleteCatMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('categories').delete().eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.error('Delete category error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+    onError: (error: any) => {
+      console.error('Delete category error:', error);
+      alert(`O'chirish xatosi: ${error.message || JSON.stringify(error)}`);
     }
   });
 
