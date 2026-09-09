@@ -3,8 +3,8 @@ import { useStore } from '../store/useStore';
 import { t } from '../lib/i18n';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LocateFixed } from 'lucide-react';
-import LeafletMap from '../components/LeafletMap';
+import { LocateFixed, MapPin } from 'lucide-react';
+import YandexMapModal from '../components/YandexMapModal';
 import { parseImages } from '../utils/imageParser';
 const WebApp = (window as any).Telegram.WebApp;
 
@@ -14,13 +14,17 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [coords, setCoords] = useState<[number, number]>([41.2995, 69.2401]); // Default Tashkent
   const [hasMoved, setHasMoved] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
-
-  const handleMapClick = (newCoords: [number, number]) => {
+  const handleModalLocationSelect = (newCoords: [number, number]) => {
     setCoords(newCoords);
     setHasMoved(true);
     const link = `https://yandex.com/maps/?pt=${newCoords[1]},${newCoords[0]}&z=17&l=map`;
     setFormData(prev => ({ ...prev, address: prev.address && !prev.address.includes('yandex') ? prev.address + '\n' + link : link }));
+  };
+
+  const openMapModal = () => {
+    setIsMapModalOpen(true);
   };
 
   const [formData, setFormData] = useState({
@@ -185,25 +189,33 @@ export default function Checkout() {
           </button>
         </div>
 
-        {/* MAP SECTION MOVED ABOVE COMMENTS */}
+        {/* MAP SECTION - Full Screen Modal */}
         <div className="border-t border-border/50 pt-2 pb-2">
           <label className="text-sm font-bold text-foreground mb-2 flex items-center justify-between">
             <span>Xaritadan tanlang <span className="text-red-500">*</span></span>
           </label>
-          <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm">
-            <LeafletMap
-              center={coords}
-              zoom={13}
-              onLocationSelect={handleMapClick}
-              markerCoords={hasMoved ? coords : null}
-            />
-          </div>
+          <button
+            type="button"
+            onClick={openMapModal}
+            className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm flex flex-col items-center justify-center gap-2 p-4 text-center transition-colors hover:border-amber-300 active:border-amber-400"
+          >
+            <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
+              <MapPin size={32} className="text-amber-600" />
+            </div>
+            <span className="text-lg font-semibold text-foreground">Xaritani to'liq ekranda ochish</span>
+            <span className="text-sm text-muted-foreground">Yandex Xitalarida manzilni aniq belgilang</span>
+            {hasMoved && (
+              <span className="text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                ✓ Manzil tanlandi
+              </span>
+            )}
+          </button>
           <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
         </div>
 
         <div>
           <label className="text-sm font-semibold text-muted-foreground mb-1 block">{t('comments', lang)}</label>
-          <textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
+<textarea name="comments" value={formData.comments} onChange={handleChange} className="w-full bg-white border border-border rounded-xl px-4 py-3 outline-none focus:border-primary min-h-[80px]" placeholder="Buyurtma uchun qo'shimcha istaklar..."></textarea>
         </div>
 
         <button 
@@ -214,6 +226,14 @@ export default function Checkout() {
           {loading ? t('submitting', lang) : t('submit', lang)}
         </button>
       </form>
+
+      <YandexMapModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        onLocationSelect={handleModalLocationSelect}
+        initialCenter={coords}
+        initialZoom={13}
+      />
     </div>
   );
 }
