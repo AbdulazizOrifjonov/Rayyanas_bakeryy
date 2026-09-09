@@ -197,20 +197,28 @@ export default function Checkout() {
           <button
             type="button"
             onClick={openMapModal}
-            className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 bg-muted/50 mb-1 relative shadow-sm flex flex-col items-center justify-center gap-2 p-4 text-center transition-colors hover:border-amber-300 active:border-amber-400"
+            className="w-full h-64 rounded-2xl overflow-hidden border-2 border-amber-200 mb-1 relative shadow-sm flex flex-col items-center justify-center gap-2 p-4 text-center transition-colors hover:border-amber-300 active:border-amber-400 group bg-amber-50"
           >
-            <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
-              <MapPin size={32} className="text-amber-600" />
+            {/* Background Map Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center opacity-40 group-active:opacity-50 transition-opacity"
+              style={{ backgroundImage: "url('https://static-maps.yandex.ru/1.x/?ll=69.2401,41.2995&size=600,400&z=13&l=map')" }}
+            />
+            
+            <div className="relative z-10 flex flex-col items-center bg-white/90 p-5 rounded-2xl backdrop-blur-md border border-amber-100/50 shadow-lg w-full max-w-[260px]">
+              <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mb-3 shadow-inner">
+                <MapPin size={28} className="text-amber-600 animate-bounce" />
+              </div>
+              <span className="text-[17px] font-bold text-gray-900 leading-tight mb-1">Xaritani ochish</span>
+              <span className="text-[13px] text-gray-600 font-medium">Yandex xaritasida belgilash</span>
+              {hasMoved && (
+                <span className="text-xs font-bold text-green-700 bg-green-100 px-4 py-1.5 rounded-full mt-3 shadow-sm border border-green-200 w-full">
+                  ✓ Manzil tanlandi
+                </span>
+              )}
             </div>
-            <span className="text-lg font-semibold text-foreground">Xaritani to'liq ekranda ochish</span>
-            <span className="text-sm text-muted-foreground">Yandex Xitalarida manzilni aniq belgilang</span>
-            {hasMoved && (
-              <span className="text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                ✓ Manzil tanlandi
-              </span>
-            )}
           </button>
-          <p className="text-xs font-medium text-amber-600 text-center">{t('map_hint', lang)}</p>
+          <p className="text-xs font-medium text-amber-600 text-center mt-1">{t('map_hint', lang)}</p>
         </div>
 
         <div>
