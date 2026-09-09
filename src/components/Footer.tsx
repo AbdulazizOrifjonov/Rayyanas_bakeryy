@@ -1,4 +1,4 @@
-import { Send, Phone, MessageCircle } from 'lucide-react';
+import { Send, Phone, MessageCircle, Code } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="mt-4 -mb-20 pb-28 pt-8 px-6 bg-gradient-to-br from-slate-900 to-slate-800 rounded-t-[32px] text-white shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative overflow-hidden">
@@ -69,13 +69,15 @@ export default function Footer() {
           </a>
         </div>
         
-        {/* Developer Credit */}
-        <div className="mt-10 mb-2 flex flex-col items-center justify-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
-          <a href="https://t.me/AbdulazizbekITMentor" target="_blank" rel="noreferrer" className="flex flex-col items-center text-center">
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-300 font-medium">
-              <span className="font-mono text-amber-500 font-bold">&lt;/&gt;</span> Shunday ilova kerakmi?
+          {/* Developer Credit */}
+          <a href="https://t.me/AbdulazizbekITMentor" target="_blank" rel="noreferrer" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3.5 active:bg-white/10 transition-colors shadow-sm mt-4">
+            <div className="flex items-center gap-3.5">
+              <div className="bg-slate-700 p-2.5 rounded-lg shadow-inner"><Code size={20} className="text-amber-400" /></div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Shunday ilova kerakmi?</span>
+                <span className="text-sm font-semibold text-white tracking-wide">Dasturchi bilan aloqa</span>
+              </div>
             </div>
-            <span className="text-[10px] font-bold text-amber-400 mt-0.5">Dasturchi: @AbdulazizbekITMentor</span>
           </a>
         </div>
       </div>
