@@ -43,9 +43,8 @@ ${orderDetails.addressText}
 ${orderDetails.mapLink ? `\n🗺 <b>Xaritada ko'rish:</b>\n<a href="${orderDetails.mapLink}">${orderDetails.mapLink}</a>` : ''}
     `.trim();
 
-    const adminIds = process.env.VITE_ADMIN_ID && process.env.VITE_ADMIN_ID !== '1594150529' 
-      ? process.env.VITE_ADMIN_ID.split(',').map(i => i.trim()) 
-      : ['1594150529', '332221882'];
+    // Send only to the specific channel/group ID requested by the user
+    const adminIds = ['-1004476922215'];
     
     for (const adminId of adminIds) {
       await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
