@@ -15,7 +15,7 @@ export default function Footer() {
         
         <div className="space-y-4 w-full">
           {/* Telegram Channel */}
-          <a href="https://t.me/+Q5YujT1WMfU1M2Uy" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-blue-400/30 bg-blue-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(59,130,246,0.15)] group transition-all duration-300 active:scale-95">
+          <a href="https://t.me/rayyanas_bakery" target="_blank" rel="noreferrer" className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-blue-400/30 bg-blue-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(59,130,246,0.15)] group transition-all duration-300 active:scale-95">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700"></div>
             <div className="relative z-10 flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
